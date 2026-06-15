@@ -50,6 +50,122 @@
   --shadow-glass: 0 8px 32px rgba(0,0,0,0.3);
 }
 
+[data-theme="dark"] .cv-preview,
+[data-theme="dark"] .cl-preview {
+  background: #1a1a2e;
+  border-color: #2d2d4a;
+}
+
+[data-theme="dark"] .cv-content,
+[data-theme="dark"] .cl-content,
+[data-theme="dark"] .cv-empty-state h3,
+[data-theme="dark"] .cv-empty-state p {
+  color: #e8e8f0;
+}
+
+[data-theme="dark"] .cv-item-title { color: #f0f0f8; }
+[data-theme="dark"] .cv-item-date { color: #9ca3af; }
+[data-theme="dark"] .cv-item-desc { color: #c0c0d0; }
+
+[data-theme="dark"] .cv-template-modern .cv-header {
+  background: linear-gradient(135deg, #5a4bd1, #8b7cf7);
+}
+[data-theme="dark"] .cv-template-modern .cv-sidebar {
+  border-right-color: #2d2d4a;
+}
+[data-theme="dark"] .cv-template-modern .cv-section h2 {
+  color: #a29bfe;
+  border-bottom-color: #a29bfe;
+}
+[data-theme="dark"] .cv-template-modern .cv-section p,
+[data-theme="dark"] .cv-template-modern .cv-section li {
+  color: #c0c0d0;
+}
+[data-theme="dark"] .cv-template-modern .cv-skill-item {
+  background: #252542;
+  color: #c0c0d0;
+}
+
+[data-theme="dark"] .cv-template-professional .cv-header {
+  border-bottom-color: #4a4a6a;
+}
+[data-theme="dark"] .cv-template-professional .cv-header-info h1 {
+  color: #e8e8f0;
+}
+[data-theme="dark"] .cv-template-professional .cv-header-info .cv-title {
+  color: #9ca3af;
+}
+[data-theme="dark"] .cv-template-professional .cv-header-info .cv-contact {
+  color: #9ca3af;
+}
+[data-theme="dark"] .cv-template-professional .cv-section h2 {
+  color: #e8e8f0;
+  border-bottom-color: #2d2d4a;
+}
+[data-theme="dark"] .cv-template-professional .cv-section p,
+[data-theme="dark"] .cv-template-professional .cv-section li {
+  color: #c0c0d0;
+}
+[data-theme="dark"] .cv-template-professional .cv-skill-item {
+  background: #252542;
+  border-color: #2d2d4a;
+  color: #c0c0d0;
+}
+
+[data-theme="dark"] .cv-template-minimal .cv-header {
+  border-bottom-color: #2d2d4a;
+}
+[data-theme="dark"] .cv-template-minimal .cv-header-info h1 {
+  color: #f0f0f8;
+}
+[data-theme="dark"] .cv-template-minimal .cv-header-info .cv-title {
+  color: #9ca3af;
+}
+[data-theme="dark"] .cv-template-minimal .cv-header-info .cv-contact {
+  color: #6b7280;
+}
+[data-theme="dark"] .cv-template-minimal .cv-section h2 {
+  color: #6b7280;
+}
+[data-theme="dark"] .cv-template-minimal .cv-section p,
+[data-theme="dark"] .cv-template-minimal .cv-section li {
+  color: #9ca3af;
+}
+[data-theme="dark"] .cv-template-minimal .cv-skill-item {
+  border-color: #2d2d4a;
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .cl-template-modern,
+[data-theme="dark"] .cl-template-modern .cl-greeting,
+[data-theme="dark"] .cl-template-modern .cl-body p { color: #e8e8f0; }
+[data-theme="dark"] .cl-template-modern .cl-sender { color: #a29bfe; }
+[data-theme="dark"] .cl-template-modern .cl-sender-email { color: #9ca3af; }
+[data-theme="dark"] .cl-template-modern .cl-date { color: #6b7280; }
+
+[data-theme="dark"] .cl-template-professional {
+  color: #e8e8f0;
+  background: #1a1a2e;
+}
+[data-theme="dark"] .cl-template-professional .cl-sender {
+  color: #e8e8f0;
+  border-bottom-color: #4a4a6a;
+}
+[data-theme="dark"] .cl-template-professional .cl-sender-email { color: #9ca3af; }
+[data-theme="dark"] .cl-template-professional .cl-date { color: #9ca3af; }
+[data-theme="dark"] .cl-template-professional .cl-recipient p { color: #c0c0d0; }
+[data-theme="dark"] .cl-template-professional .cl-body p { color: #c0c0d0; }
+[data-theme="dark"] .cl-template-professional .cl-closing { border-top-color: #2d2d4a; }
+
+[data-theme="dark"] .cl-template-minimal,
+[data-theme="dark"] .cl-template-minimal .cl-greeting { color: #c0c0d0; }
+[data-theme="dark"] .cl-template-minimal .cl-sender { color: #f0f0f8; }
+[data-theme="dark"] .cl-template-minimal .cl-sender-email { color: #6b7280; }
+[data-theme="dark"] .cl-template-minimal .cl-date { color: #6b7280; }
+[data-theme="dark"] .cl-template-minimal .cl-recipient p { color: #9ca3af; }
+[data-theme="dark"] .cl-template-minimal .cl-body p { color: #9ca3af; }
+[data-theme="dark"] .cl-template-minimal .cl-closing { color: #c0c0d0; }
+
 /* ====== RESET & BASE ====== */
 *, *::before, *::after {
   box-sizing: border-box;
