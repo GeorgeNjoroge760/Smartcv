@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartCV AI - Professional CV & Cover Letter Generator</title>
+  <meta name="description" content="Create professional CVs and cover letters with SmartCV AI">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">SmartCV AI</span>
+          <span class="logo-subtitle">Career Builder</span>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-tab="dashboard">
+        <i class="fas fa-th-large"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-tab="builder">
+        <i class="fas fa-file-alt"></i>
+        <span>CV Builder</span>
+      </a>
+      <a href="#" class="nav-item" data-tab="coverletter">
+        <i class="fas fa-envelope"></i>
+        <span>Cover Letter</span>
+      </a>
+      <a href="#" class="nav-item" data-tab="settings">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+      <a href="#" class="nav-item" data-tab="jobmatch">
+        <i class="fas fa-chart-line"></i>
+        <span>Job Match</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+        <span>Dark Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ====== OVERLAY FOR MOBILE ====== -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ====== MAIN CONTENT ====== -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ====== TOP BAR ====== -->
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="topbar-title">
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="profile-switcher">
+        <i class="fas fa-user-circle"></i>
+        <select id="profileSelect" class="profile-select" title="Switch Profile"></select>
+      </div>
+      <div class="topbar-actions">
+        <div class="save-indicator" id="saveIndicator"></div>
+        <button class="btn btn-sm btn-outline" onclick="exportJSON()" title="Export Data">
+          <i class="fas fa-download"></i> Export
+        </button>
+        <button class="btn btn-sm btn-outline" onclick="document.getElementById('importFile').click()" title="Import Data">
+          <i class="fas fa-upload"></i> Import
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      </div>
+    </header>
+
+    <!-- ====== DASHBOARD TAB ====== -->
+    <section class="tab-content active" id="tab-dashboard">
+      <div class="dashboard-grid">
+        <div class="stat-card glass" id="statCompletion">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="completionPercent">0%</span>
+            <span class="stat-label">CV Completion</span>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="completionFill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-card glass" id="statSkills">
+          <div class="stat-icon"><i class="fas fa-code"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="skillCount">0</span>
+            <span class="stat-label">Skills Added</span>
+          </div>
+        </div>
+        <div class="stat-card glass" id="statExperience">
+          <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="expCount">0</span>
+            <span class="stat-label">Experiences</span>
+          </div>
+        </div>
+        <div class="stat-card glass" id="statProjects">
+          <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="projectCount">0</span>
+            <span class="stat-label">Projects</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-welcome glass">
+        <div class="welcome-content">
+          <h2>Welcome to SmartCV AI</h2>
+          <p>Fill in your details in the CV Builder to generate professional documents. Your data is saved automatically.</p>
+          <div class="welcome-actions">
+            <button class="btn btn-primary" onclick="switchTab('builder')">
+              <i class="fas fa-file-alt"></i> Build Your CV
+            </button>
+            <button class="btn btn-secondary" onclick="switchTab('coverletter')">
+              <i class="fas fa-envelope"></i> Generate Cover Letter
+            </button>
+          </div>
+        </div>
+        <div class="welcome-illustration">
+          <i class="fas fa-robot"></i>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button class="action-card glass" onclick="downloadCVPdf()">
+          <i class="fas fa-file-pdf"></i>
+          <span>Download CV (PDF)</span>
+        </button>
+        <button class="action-card glass" onclick="downloadCVDocx()">
+          <i class="fas fa-file-word"></i>
+          <span>Download CV (DOCX)</span>
+        </button>
+        <button class="action-card glass" onclick="downloadCoverLetterPDF()">
+          <i class="fas fa-file-pdf"></i>
+          <span>Cover Letter (PDF)</span>
+        </button>
+        <button class="action-card glass" onclick="downloadCoverLetterDocx()">
+          <i class="fas fa-file-word"></i>
+          <span>Cover Letter (DOCX)</span>
+        </button>
+        <button class="action-card glass" onclick="printCV()">
+          <i class="fas fa-print"></i>
+          <span>Print CV</span>
+        </button>
+        <button class="action-card glass" onclick="printCoverLetter()">
+          <i class="fas fa-print"></i>
+          <span>Print Cover Letter</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====== CV BUILDER TAB ====== -->
+    <section class="tab-content" id="tab-builder">
+      <div class="builder-layout">
+        <!-- Form Panel -->
+        <div class="builder-form glass">
+          <div class="form-nav">
+            <button class="form-nav-btn active" data-section="personal"><i class="fas fa-user"></i> Personal</button>
+            <button class="form-nav-btn" data-section="professional"><i class="fas fa-briefcase"></i> Professional</button>
+            <button class="form-nav-btn" data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
+            <button class="form-nav-btn" data-section="experience"><i class="fas fa-history"></i> Experience</button>
+            <button class="form-nav-btn" data-section="skills"><i class="fas fa-code"></i> Skills</button>
+            <button class="form-nav-btn" data-section="projects"><i class="fas fa-folder"></i> Projects</button>
+            <button class="form-nav-btn" data-section="references"><i class="fas fa-users"></i> References</button>
+          </div>
+
+          <div class="form-sections">
+            <!-- PERSONAL -->
+            <div class="form-section active" id="section-personal">
+              <h3>Personal Information</h3>
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="e.g. John Anderson" data-field="fullName">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" id="email" placeholder="john@example.com" data-field="email">
+                </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="tel" id="phone" placeholder="+1 (555) 000-0000" data-field="phone">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="location" placeholder="e.g. New York, NY" data-field="location">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>LinkedIn</label>
+                  <input type="url" id="linkedin" placeholder="linkedin.com/in/username" data-field="linkedin">
+                </div>
+                <div class="form-group">
+                  <label>Portfolio</label>
+                  <input type="url" id="portfolio" placeholder="yourwebsite.com" data-field="portfolio">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Profile Photo</label>
+                <div class="photo-upload" id="photoUpload">
+                  <div class="photo-placeholder">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload Photo</span>
+                  </div>
+                  <img id="photoPreview" class="photo-preview" alt="Profile Photo">
+                  <input type="file" id="photoInput" accept="image/*" style="display:none">
+                  <button class="btn btn-sm btn-outline photo-remove" id="photoRemove" style="display:none">
+                    <i class="fas fa-times"></i> Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- PROFESSIONAL -->
+            <div class="form-section" id="section-professional">
+              <h3>Professional Information</h3>
+              <div class="form-group">
+                <label>Professional Title</label>
+                <input type="text" id="professionalTitle" placeholder="e.g. Senior Software Engineer" data-field="professionalTitle">
+              </div>
+              <div class="form-group">
+                <label>Career Summary</label>
+                <textarea id="careerSummary" rows="5" placeholder="Write a brief professional summary highlighting your key achievements and career goals..." data-field="careerSummary"></textarea>
+                <span class="char-count"><span id="summaryChars">0</span>/500</span>
+              </div>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="form-section" id="section-education">
+              <div class="section-header">
+                <h3>Education</h3>
+                <button class="btn btn-sm btn-primary" onclick="addEducation()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="educationContainer"></div>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="form-section" id="section-experience">
+              <div class="section-header">
+                <h3>Work Experience</h3>
+                <button class="btn btn-sm btn-primary" onclick="addExperience()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="experienceContainer"></div>
+            </div>
+
+            <!-- SKILLS -->
+            <div class="form-section" id="section-skills">
+              <h3>Skills</h3>
+              <div class="skill-input-group">
+                <div class="form-row">
+                  <div class="form-group">
+                    <input type="text" id="skillInput" placeholder="Type a skill and press Enter" data-field="skillInput">
+                  </div>
+                  <button class="btn btn-primary" onclick="addSkill()"><i class="fas fa-plus"></i> Add</button>
+                </div>
+              </div>
+              <div class="skills-tags" id="skillsContainer"></div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="form-section" id="section-projects">
+              <div class="section-header">
+                <h3>Projects</h3>
+                <button class="btn btn-sm btn-primary" onclick="addProject()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="projectsContainer"></div>
+            </div>
+
+            <!-- REFERENCES -->
+            <div class="form-section" id="section-references">
+              <div class="section-header">
+                <h3>References</h3>
+                <button class="btn btn-sm btn-primary" onclick="addReference()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="referencesContainer"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CV Preview Panel -->
+        <div class="builder-preview">
+          <div class="preview-toolbar">
+            <div class="template-selector">
+              <label>Template:</label>
+              <div class="template-buttons">
+                <button class="template-btn active" data-template="modern" onclick="setTemplate('modern')">Modern</button>
+                <button class="template-btn" data-template="professional" onclick="setTemplate('professional')">Professional</button>
+                <button class="template-btn" data-template="minimal" onclick="setTemplate('minimal')">Minimal</button>
+              </div>
+            </div>
+            <div class="preview-actions">
+              <button class="btn btn-sm btn-primary" onclick="downloadCVPdf()"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn btn-sm btn-outline" onclick="downloadCVDocx()"><i class="fas fa-file-word"></i> DOCX</button>
+              <button class="btn btn-sm btn-outline" onclick="printCV()"><i class="fas fa-print"></i> Print</button>
+            </div>
+          </div>
+          <div class="cv-preview" id="cvPreview">
+            <div class="cv-empty-state">
+              <i class="fas fa-file-alt"></i>
+              <h3>Your CV will appear here</h3>
+              <p>Fill in your details in the form to see a live preview</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== COVER LETTER TAB ====== -->
+    <section class="tab-content" id="tab-coverletter">
+      <div class="builder-layout">
+        <div class="builder-form glass">
+          <h3>Cover Letter Details</h3>
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="clCompany" placeholder="e.g. Acme Corporation">
+          </div>
+          <div class="form-group">
+            <label>Hiring Manager Name</label>
+            <input type="text" id="clManager" placeholder="e.g. Jane Smith">
+          </div>
+          <div class="form-group">
+            <label>Job Position</label>
+            <input type="text" id="clPosition" placeholder="e.g. Frontend Developer">
+          </div>
+          <div class="form-group">
+            <label>Company Address (optional)</label>
+            <input type="text" id="clAddress" placeholder="e.g. 123 Business Ave, Suite 100">
+          </div>
+          <div class="form-group">
+            <label>Additional Notes (optional)</label>
+            <textarea id="clNotes" rows="4" placeholder="Any specific points you want to highlight..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="regenerateCoverLetter()">
+            <i class="fas fa-sync-alt"></i> Generate Cover Letter
+          </button>
+        </div>
+        <div class="builder-preview">
+          <div class="preview-toolbar">
+            <div class="template-selector">
+              <label>Style:</label>
+              <div class="template-buttons">
+                <button class="cl-template-btn active" data-template="modern" onclick="setClTemplate('modern')">Modern</button>
+                <button class="cl-template-btn" data-template="professional" onclick="setClTemplate('professional')">Professional</button>
+                <button class="cl-template-btn" data-template="minimal" onclick="setClTemplate('minimal')">Minimal</button>
+              </div>
+            </div>
+            <div class="preview-actions">
+              <button class="btn btn-sm btn-primary" onclick="downloadCoverLetterPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn btn-sm btn-outline" onclick="downloadCoverLetterDocx()"><i class="fas fa-file-word"></i> DOCX</button>
+              <button class="btn btn-sm btn-outline" onclick="printCoverLetter()"><i class="fas fa-print"></i> Print</button>
+            </div>
+          </div>
+          <div class="cl-preview" id="clPreview">
+            <div class="cv-empty-state">
+              <i class="fas fa-envelope-open-text"></i>
+              <h3>Your Cover Letter will appear here</h3>
+              <p>Enter the company details and click Generate</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SETTINGS TAB ====== -->
+    <section class="tab-content" id="tab-settings">
+      <div class="settings-grid">
+        <div class="settings-card glass">
+          <h3><i class="fas fa-palette"></i> Appearance</h3>
+          <div class="form-group">
+            <label>Theme</label>
+            <div class="theme-selector">
+              <button class="theme-option active" data-theme="light" onclick="setTheme('light')">
+                <i class="fas fa-sun"></i> Light
+              </button>
+              <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                <i class="fas fa-moon"></i> Dark
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-card glass">
+          <h3><i class="fas fa-database"></i> Data Management</h3>
+          <div class="settings-actions">
+            <button class="btn btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> Export Data (JSON)</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> Import Data (JSON)</button>
+            <button class="btn btn-danger" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> Clear All Data</button>
+          </div>
+        </div>
+        <div class="settings-card glass">
+          <h3><i class="fas fa-users"></i> Profiles</h3>
+          <p class="text-muted">Create separate CV profiles for different job applications. Each profile stores its own data.</p>
+          <div id="profileList" class="profile-list"></div>
+          <div class="profile-create">
+            <input type="text" id="newProfileName" placeholder="e.g. Google Application" class="form-control">
+            <button class="btn btn-primary" onclick="createProfile(document.getElementById('newProfileName').value);document.getElementById('newProfileName').value=''"><i class="fas fa-plus"></i> Create</button>
+          </div>
+        </div>
+        <div class="settings-card glass">
+          <h3><i class="fas fa-robot"></i> AI Integration</h3>
+          <p class="text-muted">AI-powered features will use your form data to generate optimized content. Configure your API key below (optional).</p>
+          <div class="form-group">
+            <label>OpenAI API Key</label>
+            <input type="password" id="apiKey" placeholder="sk-..." data-field="apiKey">
+          </div>
+          <div class="settings-actions">
+            <button class="btn btn-primary" onclick="generateAICV()"><i class="fas fa-magic"></i> Enhance CV with AI</button>
+            <button class="btn btn-secondary" onclick="generateAICoverLetter()"><i class="fas fa-magic"></i> Generate Cover Letter with AI</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== JOB MATCH TAB ====== -->
+    <section class="tab-content" id="tab-jobmatch">
+      <div class="jobmatch-layout">
+        <div class="jobmatch-input glass">
+          <h3><i class="fas fa-paste"></i> Job Description</h3>
+          <p class="text-muted">Paste the job description below to see how well your CV matches.</p>
+          <div class="form-group">
+            <label>Job Description</label>
+            <textarea id="jobDescription" rows="12" placeholder="Paste the full job description here..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="analyzeJobMatch()">
+            <i class="fas fa-search"></i> Analyze Match
+          </button>
+        </div>
+        <div class="jobmatch-results" id="jobMatchResults">
+          <div class="cv-empty-state">
+            <i class="fas fa-chart-line"></i>
+            <h3>No analysis yet</h3>
+            <p>Paste a job description and click "Analyze Match" to see your score</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
