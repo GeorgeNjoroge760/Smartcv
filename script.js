@@ -926,74 +926,97 @@ function clearAllData() {
 
 /* ====== AI PLACEHOLDER FUNCTIONS ====== */
 function generateAICV() {
-  /*
-   * FUTURE OPENAI INTEGRATION:
-   *
-   * const apiKey = data.apiKey || localStorage.getItem('openai_key');
-   * if (!apiKey) { alert('Please enter your OpenAI API key in Settings.'); return; }
-   *
-   * const prompt = `Generate a professional CV summary based on:
-   *   Name: ${data.fullName}
-   *   Title: ${data.professionalTitle}
-   *   Skills: ${data.skills.join(', ')}
-   *   Experience: ${JSON.stringify(data.experience)}
-   *   Education: ${JSON.stringify(data.education)}
-   *   Projects: ${JSON.stringify(data.projects)}
-   *
-   *   Please provide an enhanced professional summary and bullet points.`;
-   *
-   * fetch('https://api.openai.com/v1/chat/completions', {
-   *   method: 'POST',
-   *   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-   *   body: JSON.stringify({
-   *     model: 'gpt-4',
-   *     messages: [{ role: 'user', content: prompt }],
-   *     temperature: 0.7
-   *   })
-   * }).then(res => res.json()).then(res => {
-   *   const enhancedSummary = res.choices[0].message.content;
-   *   data.careerSummary = enhancedSummary;
-   *   document.getElementById('careerSummary').value = enhancedSummary;
-   *   saveData();
-   *   renderCV();
-   *   alert('CV enhanced successfully!');
-   * }).catch(err => alert('AI enhancement failed: ' + err.message));
-   */
-  alert('AI CV enhancement is not yet connected to an API. To integrate:\n\n1. Get an OpenAI API key\n2. Enter it in Settings\n3. Uncomment the API call in script.js\n\nFor now, manually fill in your details to create your CV.');
+  const apiKey = data.apiKey;
+  if (!apiKey) { alert('Please enter your OpenAI API key in Settings first.'); return; }
+  if (!data.fullName) { alert('Please fill in your name and other details first.'); return; }
+
+  const prompt = `You are a Professional CV Writer. Enhance the following CV information by writing a compelling professional summary (2-3 paragraphs) and bullet points for each experience entry.
+
+Name: ${data.fullName}
+Title: ${data.professionalTitle || 'N/A'}
+Skills: ${data.skills.join(', ') || 'N/A'}
+Experience: ${JSON.stringify(data.experience, null, 2)}
+Education: ${JSON.stringify(data.education, null, 2)}
+Projects: ${JSON.stringify(data.projects, null, 2)}
+
+Return ONLY the enhanced summary text — no extra commentary, no markdown formatting.`;
+
+  fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7
+    })
+  }).then(res => {
+    if (!res.ok) return res.json().then(e => { throw new Error(e.error?.message || 'API error') });
+    return res.json();
+  }).then(res => {
+    const enhanced = res.choices[0].message.content.trim();
+    data.careerSummary = enhanced;
+    document.getElementById('careerSummary').value = enhanced;
+    document.getElementById('summaryChars').textContent = enhanced.length;
+    saveData();
+    renderCV();
+    alert('CV enhanced successfully!');
+  }).catch(err => alert('AI enhancement failed: ' + err.message));
 }
 
 function generateAICoverLetter() {
-  /*
-   * FUTURE OPENAI INTEGRATION:
-   *
-   * const apiKey = data.apiKey || localStorage.getItem('openai_key');
-   * if (!apiKey) { alert('Please enter your OpenAI API key in Settings.'); return; }
-   *
-   * const prompt = `Write a professional cover letter for:
-   *   Applicant: ${data.fullName}
-   *   Position: ${data.coverLetter.position}
-   *   Company: ${data.coverLetter.company}
-   *   Hiring Manager: ${data.coverLetter.manager}
-   *   Skills: ${data.skills.join(', ')}
-   *   Experience: ${JSON.stringify(data.experience)}
-   *   Additional Notes: ${data.coverLetter.notes}
-   *
-   *   Write a compelling, professional cover letter.`;
-   *
-   * fetch('https://api.openai.com/v1/chat/completions', {
-   *   method: 'POST',
-   *   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-   *   body: JSON.stringify({
-   *     model: 'gpt-4',
-   *     messages: [{ role: 'user', content: prompt }],
-   *     temperature: 0.7
-   *   })
-   * }).then(res => res.json()).then(res => {
-   *   const letter = res.choices[0].message.content;
-   *   alert('AI-generated cover letter:\n\n' + letter);
-   * }).catch(err => alert('AI generation failed: ' + err.message));
-   */
-  alert('AI Cover Letter generation is not yet connected to an API. To integrate:\n\n1. Get an OpenAI API key\n2. Enter it in Settings\n3. Uncomment the API call in script.js\n\nFor now, fill in your details and use the standard generator.');
+  const apiKey = data.apiKey;
+  if (!apiKey) { alert('Please enter your OpenAI API key in Settings first.'); return; }
+  if (!data.fullName || !data.coverLetter.company || !data.coverLetter.position) {
+    alert('Please fill in your name, company name, and job position first.');
+    return;
+  }
+
+  const prompt = `You are a Professional Cover Letter Writer. Write a compelling, professional cover letter based on:
+
+Applicant Name: ${data.fullName}
+Applicant Title: ${data.professionalTitle || 'Professional'}
+Position: ${data.coverLetter.position}
+Company: ${data.coverLetter.company}
+Hiring Manager: ${data.coverLetter.manager || 'Hiring Manager'}
+Company Address: ${data.coverLetter.address || ''}
+Skills: ${data.skills.join(', ') || 'N/A'}
+Experience: ${JSON.stringify(data.experience, null, 2)}
+Additional Notes: ${data.coverLetter.notes || ''}
+
+Write a complete, ready-to-send cover letter. Use today's date. Be specific using the details provided. Return ONLY the letter body (no subject line, no meta text). Format it with clear paragraphs.`;
+
+  fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7
+    })
+  }).then(res => {
+    if (!res.ok) return res.json().then(e => { throw new Error(e.error?.message || 'API error') });
+    return res.json();
+  }).then(res => {
+    const letter = res.choices[0].message.content.trim();
+
+    // Try to extract company, manager, position from the generated letter
+    const lines = letter.split('\n').filter(l => l.trim());
+    const companyMatch = letter.match(/(?:at|for|with)\s+([A-Z][A-Za-z0-9\s&.]+?)(?:\s+position|\s+role|\s+team|\.|,)/i);
+    const managerMatch = letter.match(/Dear\s+(.+?),/i);
+
+    if (managerMatch) data.coverLetter.manager = managerMatch[1].trim();
+    // Update form fields
+    document.getElementById('clManager').value = data.coverLetter.manager || '';
+    document.getElementById('clCompany').value = data.coverLetter.company || '';
+    document.getElementById('clPosition').value = data.coverLetter.position || '';
+
+    // Store full letter in notes so user can review
+    data.coverLetter.notes = 'AI-generated letter below (you may edit):\n\n' + letter;
+    document.getElementById('clNotes').value = data.coverLetter.notes;
+    saveData();
+    renderCoverLetter();
+    alert('Cover letter generated successfully! Check the preview.');
+  }).catch(err => alert('AI generation failed: ' + err.message));
 }
 
 /* ====== PROFILE MANAGEMENT ====== */
