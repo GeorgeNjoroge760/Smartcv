@@ -765,10 +765,19 @@ function downloadCVPdf() {
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
 
-  html2pdf().set(opt).from(element).save().catch(err => {
+  // Clone and force light theme for clean PDF output
+  const clone = content.cloneNode(true);
+  applyLightStyles(clone);
+  const wrapper = document.createElement('div');
+  wrapper.appendChild(clone);
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;background:#fff;';
+
+  // Temporarily replace, capture, restore
+  const original = content.parentNode.insertBefore(wrapper, content);
+  html2pdf().set(opt).from(wrapper).save().catch(err => {
     console.error('PDF error:', err);
     alert('Could not generate PDF. Please try the Print option instead.');
-  });
+  }).finally(() => original.remove());
 }
 
 function downloadCoverLetterPDF() {
@@ -787,36 +796,90 @@ function downloadCoverLetterPDF() {
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
 
-  html2pdf().set(opt).from(element).save().catch(err => {
+  const clone = content.cloneNode(true);
+  applyLightStyles(clone);
+  const wrapper = document.createElement('div');
+  wrapper.appendChild(clone);
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;background:#fff;';
+
+  const original = content.parentNode.insertBefore(wrapper, content);
+  html2pdf().set(opt).from(wrapper).save().catch(err => {
     console.error('PDF error:', err);
     alert('Could not generate PDF. Please try the Print option instead.');
+  }).finally(() => original.remove());
+}
+
+/* ====== LIGHT STYLES FOR EXPORTS ====== */
+function applyLightStyles(el) {
+  el.querySelectorAll('*').forEach(n => {
+    // Remove any inline color/background
+    if (n.style) n.style.cssText = '';
   });
+  el.style.cssText = 'color:#333;background:#fff;';
+  // Ensure nested elements inherit
+  const darkBg = el.querySelectorAll('.cl-template-professional');
+  darkBg.forEach(n => { n.style.cssText = (n.style.cssText || '') + 'color:#333;background:#fff;'; });
 }
 
 /* ====== DOCX EXPORT ====== */
 function htmlToDocxBlob(htmlContent, title) {
+  // Strip dark-theme CSS artifacts by cloning and forcing light colors
+  const tmp = document.createElement('div');
+  tmp.innerHTML = htmlContent;
+  applyLightStyles(tmp);
+  const cleanHtml = tmp.innerHTML;
+
   const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
   xmlns:w='urn:schemas-microsoft-com:office:word'
   xmlns='http://www.w3.org/TR/REC-html40'>
   <head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
   <style>
     body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #333; line-height: 1.5; margin: 1in; }
-    h1 { font-size: 18pt; margin-bottom: 2pt; }
+    h1 { font-size: 18pt; margin-bottom: 2pt; color: #333; }
     h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
-    p { margin: 4pt 0; }
-    .cl-date { margin: 12pt 0; }
-    .cl-greeting { margin: 10pt 0; }
-    .cl-body p { margin-bottom: 8pt; }
-    .cl-closing { margin-top: 16pt; }
-    .cv-contact span { margin-right: 12pt; }
-    .cv-section { margin-bottom: 10pt; }
-    .cv-item { margin-bottom: 8pt; }
-    .cv-item-title { font-weight: bold; }
-    .cv-item-subtitle { color: #6c5ce7; }
-    .cv-item-date { color: #999; font-size: 10pt; }
-    .cv-item-desc { margin-top: 2pt; }
-    .cv-skills-list span { display: inline-block; margin: 2pt 4pt 2pt 0; }
-  </style></head><body>${htmlContent}</body></html>`;
+    p { margin: 4pt 0; color: #333; }
+    .cl-content { background:#fff; color:#333; padding:40px 48px; }
+    .cl-template-modern { background:#fff; color:#333; padding:40px 48px; font-family:'Calibri','Segoe UI',Arial,sans-serif; line-height:1.7; }
+    .cl-template-professional { background:#fff; color:#2c3e50; padding:48px 56px; font-family:Georgia,'Times New Roman',serif; line-height:1.8; }
+    .cl-template-minimal { background:#fff; color:#555; padding:32px 40px; font-family:'Calibri','Segoe UI',Arial,sans-serif; line-height:1.7; font-weight:300; }
+    .cl-sender { font-weight:700; }
+    .cl-template-modern .cl-sender { font-size:1.4rem; color:#6c5ce7; }
+    .cl-template-professional .cl-sender { font-size:1.6rem; color:#2c3e50; }
+    .cl-template-minimal .cl-sender { font-size:1.2rem; color:#222; }
+    .cl-sender-email { color:#666; font-size:0.85rem; }
+    .cl-date { margin:16px 0; color:#999; font-size:0.85rem; }
+    .cl-greeting { margin:14px 0; color:#333; }
+    .cl-body p { margin-bottom:12px; color:#333; }
+    .cl-recipient p { color:#333; }
+    .cl-closing { margin-top:24px; color:#333; }
+    .cv-content { background:#fff; color:#333; }
+    .cv-header h1 { font-size:18pt; margin-bottom:2pt; color:#333; }
+    .cv-title { color:#666; }
+    .cv-contact span { margin-right:12pt; color:#555; }
+    .cv-section { margin-bottom:10pt; }
+    .cv-section h2 { font-size:13pt; text-transform:uppercase; letter-spacing:1px; color:#6c5ce7; border-bottom:1px solid #ddd; padding-bottom:4pt; margin-top:14pt; margin-bottom:8pt; }
+    .cv-item { margin-bottom:8pt; }
+    .cv-item-title { font-weight:bold; color:#333; }
+    .cv-item-subtitle { color:#6c5ce7; }
+    .cv-item-date { color:#999; font-size:10pt; }
+    .cv-item-desc { margin-top:2pt; color:#555; }
+    .cv-skills-list span { display:inline-block; margin:2pt 4pt 2pt 0; padding:2pt 8pt; background:#eee; border-radius:10pt; color:#555; font-size:9pt; }
+    .cv-template-modern .cv-header { background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:#fff; padding:32px 36px; display:flex; align-items:center; gap:24px; }
+    .cv-template-modern .cv-header h1 { color:#fff; }
+    .cv-template-modern .cv-header .cv-title { color:rgba(255,255,255,0.9); }
+    .cv-template-modern .cv-header .cv-contact span { color:rgba(255,255,255,0.85); }
+    .cv-template-modern .cv-body { padding:24px 36px; display:grid; grid-template-columns:1fr 2fr; gap:24px; }
+    .cv-template-modern .cv-sidebar { border-right:2px solid #f0f0f0; padding-right:24px; }
+    .cv-template-modern .cv-main { padding-left:0; }
+    .cv-template-professional .cv-header { text-align:center; padding:36px 36px 24px; border-bottom:3px double #2c3e50; }
+    .cv-template-professional .cv-header h1 { color:#2c3e50; }
+    .cv-template-professional .cv-header .cv-title { color:#7f8c8d; font-style:italic; }
+    .cv-template-professional .cv-body { padding:24px 36px; }
+    .cv-template-minimal .cv-header { padding:28px 36px 16px; border-bottom:1px solid #e0e0e0; display:flex; align-items:flex-start; gap:20px; }
+    .cv-template-minimal .cv-header h1 { color:#222; font-weight:300; }
+    .cv-template-minimal .cv-header .cv-title { color:#999; }
+    .cv-template-minimal .cv-body { padding:20px 36px; }
+  </style></head><body>${cleanHtml}</body></html>`;
   return new Blob([fullHtml], { type: 'application/msword' });
 }
 
