@@ -746,6 +746,70 @@ function updateDashboard() {
   document.getElementById('skillCount').textContent = data.skills.length;
   document.getElementById('expCount').textContent = data.experience.length;
   document.getElementById('projectCount').textContent = data.projects.length;
+
+  renderTips();
+}
+
+/* ====== CV TIPS ====== */
+function renderTips() {
+  const container = document.getElementById('dashboardTips');
+  if (!container) return;
+
+  const tips = [];
+
+  if (!data.fullName) tips.push({ icon: 'fa-user', text: 'Add your full name so employers know who you are.', action: 'builder', priority: 1 });
+  if (!data.email) tips.push({ icon: 'fa-envelope', text: 'Add an email address so employers can contact you.', action: 'builder', priority: 1 });
+  if (!data.phone) tips.push({ icon: 'fa-phone', text: 'Add a phone number for employers to reach you.', action: 'builder', priority: 1 });
+  if (!data.location) tips.push({ icon: 'fa-map-marker-alt', text: 'Add your location — many recruiters filter by location.', action: 'builder', priority: 2 });
+  if (!data.professionalTitle) tips.push({ icon: 'fa-briefcase', text: 'Add a professional title to immediately communicate your role.', action: 'builder', priority: 1 });
+  if (!data.careerSummary) tips.push({ icon: 'fa-pen', text: 'Write a career summary to highlight your key achievements.', action: 'builder', priority: 1 });
+  if (data.education.length === 0) tips.push({ icon: 'fa-graduation-cap', text: 'Add your education background.', action: 'builder', priority: 2 });
+  if (data.experience.length === 0) tips.push({ icon: 'fa-briefcase', text: 'Add work experience to strengthen your CV.', action: 'builder', priority: 1 });
+  if (data.skills.length < 3) tips.push({ icon: 'fa-code', text: 'Add more skills — aim for at least 5 relevant skills.', action: 'builder', priority: 2 });
+  if (data.projects.length === 0) tips.push({ icon: 'fa-project-diagram', text: 'Add projects to demonstrate your practical experience.', action: 'builder', priority: 3 });
+  if (data.references.length === 0) tips.push({ icon: 'fa-users', text: 'Add references to build trust with employers.', action: 'builder', priority: 3 });
+
+  // Cover letter tips
+  if (data.fullName && (!data.coverLetter.company || !data.coverLetter.position)) {
+    tips.push({ icon: 'fa-envelope', text: 'Fill in the company name and job position to generate a cover letter.', action: 'coverletter', priority: 2 });
+  }
+
+  // Profile tips
+  const profileCount = Object.keys(profiles.items || {}).length;
+  if (profileCount <= 1 && data.fullName) {
+    tips.push({ icon: 'fa-user-circle', text: 'Create multiple CV profiles to tailor your application for different jobs.', action: 'settings', priority: 3 });
+  }
+
+  // Sort by priority
+  tips.sort((a, b) => a.priority - b.priority);
+
+  // Show top 5
+  const showTips = tips.slice(0, 5);
+
+  if (showTips.length === 0) {
+    container.innerHTML = `<div class="tips-card glass tips-complete">
+      <i class="fas fa-check-circle"></i>
+      <span>Your CV looks great! All key sections are filled in.</span>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="tips-card glass">
+    <div class="tips-header">
+      <i class="fas fa-lightbulb"></i>
+      <h4>Tips to Improve Your CV</h4>
+      <span class="tips-count">${showTips.length} of ${tips.length}</span>
+    </div>
+    <div class="tips-list">
+      ${showTips.map(t => `
+        <div class="tip-item" onclick="switchTab('${t.action}')">
+          <div class="tip-icon"><i class="fas ${t.icon}"></i></div>
+          <span class="tip-text">${t.text}</span>
+          <i class="fas fa-chevron-right tip-arrow"></i>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
 }
 
 /* ====== PDF EXPORT ====== */
