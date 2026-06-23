@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-docx@1.8.0/dist/html-to-docx.umd.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -423,7 +424,7 @@
         </div>
         <div class="settings-card glass">
           <h3><i class="fas fa-robot"></i> AI Integration</h3>
-          <p class="text-muted">AI-powered features will use your form data to generate optimized content. Configure your API key below (optional).</p>
+          <p class="text-muted">AI-powered features will use your form data to generate optimized content. Configure your API key below (optional). Your key is stored only for this session and never saved to disk.</p>
           <div class="form-group">
             <label>OpenAI API Key</label>
             <input type="password" id="apiKey" placeholder="sk-..." data-field="apiKey">
@@ -432,6 +433,23 @@
             <button class="btn btn-primary" onclick="generateAICV()"><i class="fas fa-magic"></i> Enhance CV with AI</button>
             <button class="btn btn-secondary" onclick="generateAICoverLetter()"><i class="fas fa-magic"></i> Generate Cover Letter with AI</button>
           </div>
+        </div>
+
+        <div class="settings-card glass">
+          <h3><i class="fas fa-chart-line"></i> Job Match Keywords</h3>
+          <p class="text-muted">Add custom skill keywords for the Job Match analysis. Each entry maps a skill name to comma-separated keywords found in job descriptions.</p>
+          <div id="customSkillsContainer" class="custom-skills-list"></div>
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label>Skill Name</label>
+              <input type="text" id="customSkillName" placeholder="e.g. Docker">
+            </div>
+            <div class="form-group">
+              <label>Keywords (comma-separated)</label>
+              <input type="text" id="customSkillKeywords" placeholder="e.g. docker, container, docker compose">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="addCustomSkill()"><i class="fas fa-plus"></i> Add Keyword Mapping</button>
         </div>
       </div>
     </section>
@@ -462,6 +480,6 @@
 
   </main>
 
-  <script src="script.js"></script>
+  <script type="module" src="/script.js"></script>
 </body>
 </html>

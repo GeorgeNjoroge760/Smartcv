@@ -5,6 +5,7 @@ function getDefaultData() {
     professionalTitle: '', careerSummary: '', photo: '',
     education: [], experience: [], skills: [], projects: [], references: [],
     coverLetter: { company: '', manager: '', position: '', address: '', notes: '' },
+    customSkills: [],
     apiKey: '', template: 'modern', clTemplate: 'modern', theme: 'light'
   };
 }
@@ -24,7 +25,9 @@ let currentProfileId = 'default';
 function saveProfiles() {
   try {
     profiles.items[currentProfileId].data = data;
-    localStorage.setItem('smartcv_profiles', JSON.stringify(profiles));
+    const clone = JSON.parse(JSON.stringify(profiles));
+    Object.values(clone.items).forEach(p => { delete p.data.apiKey; });
+    localStorage.setItem('smartcv_profiles', JSON.stringify(clone));
   } catch (e) {
     console.warn('Profiles save error:', e);
   }
@@ -78,6 +81,10 @@ function loadData() {
       currentProfileId = 'default';
       data = profiles.items.default.data;
     }
+
+    // Restore API key from sessionStorage (never persisted to disk)
+    const sessionKey = sessionStorage.getItem('smartcv_api_key');
+    if (sessionKey) { data.apiKey = sessionKey; }
 
     const theme = localStorage.getItem('smartcv_theme');
     if (theme) { data.theme = theme; }
@@ -153,12 +160,13 @@ function bindFormFields() {
     });
   }
 
-  // API key
+  // API key (session-only — never persisted to localStorage)
   const apiKey = document.getElementById('apiKey');
   if (apiKey) {
     apiKey.addEventListener('input', () => {
       data.apiKey = apiKey.value;
-      saveData();
+      try { sessionStorage.setItem('smartcv_api_key', apiKey.value); } catch (e) { /* ignore */ }
+      showSaveIndicator();
     });
   }
 }
@@ -721,7 +729,6 @@ function regenerateCoverLetter() {
 
 /* ====== DASHBOARD ====== */
 function updateDashboard() {
-  const totalFields = 7; // name, email, phone, location, title, summary, photo
   let filled = 0;
   if (data.fullName) filled++;
   if (data.email) filled++;
@@ -729,7 +736,7 @@ function updateDashboard() {
   if (data.location) filled++;
   if (data.professionalTitle) filled++;
   if (data.careerSummary) filled++;
-  if (data.photo) filled++;
+  const photoScore = data.photo ? 0.5 : 0;
 
   const eduScore = Math.min(data.education.length, 3);
   const expScore = Math.min(data.experience.length, 3);
@@ -737,8 +744,8 @@ function updateDashboard() {
   const skillScore = Math.min(data.skills.length, 5);
   const refScore = Math.min(data.references.length, 2);
 
-  const totalPossible = 7 + 3 + 3 + 3 + 5 + 2;
-  const currentScore = filled + eduScore + expScore + projScore + skillScore + refScore;
+  const totalPossible = 6 + 0.5 + 3 + 3 + 3 + 5 + 2;
+  const currentScore = filled + photoScore + eduScore + expScore + projScore + skillScore + refScore;
   const percent = Math.min(Math.round((currentScore / totalPossible) * 100), 100);
 
   document.getElementById('completionPercent').textContent = percent + '%';
@@ -813,99 +820,86 @@ function renderTips() {
 }
 
 /* ====== PDF EXPORT ====== */
+function getPdfOpt(filename) {
+  return {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, letterRendering: true, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+}
+
 function downloadCVPdf() {
-  const element = document.getElementById('cvPreview');
-  const content = element.querySelector('.cv-content');
+  const el = document.querySelector('#cvPreview .cv-content');
+  if (!el || !data.fullName) { alert('Please fill in your details first.'); return; }
+  const name = data.fullName.replace(/\s+/g, '_');
+  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el).save();
+}
+
+function downloadCoverLetterPDF() {
+  const el = document.querySelector('#clPreview .cl-content');
+  if (!el || !data.fullName) { alert('Please fill in your details first.'); return; }
+  const name = data.fullName.replace(/\s+/g, '_');
+  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el).save();
+}
+
+function printCV() {
+  const el = document.querySelector('#cvPreview .cv-content');
+  if (!el || !data.fullName) { alert('Please fill in your details first.'); return; }
+  html2pdf().set(getPdfOpt(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+    window.open(pdf.output('bloburl'), '_blank');
+  });
+}
+
+function printCoverLetter() {
+  const el = document.querySelector('#clPreview .cl-content');
+  if (!el || !data.fullName) { alert('Please fill in your details first.'); return; }
+  html2pdf().set(getPdfOpt(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+    window.open(pdf.output('bloburl'), '_blank');
+  });
+}
+
+/* ====== DOCX EXPORT ====== */
+async function downloadCVDocx() {
+  const content = document.querySelector('#cvPreview .cv-content');
   if (!content || !data.fullName) {
     alert('Please fill in your details first to generate a CV.');
     return;
   }
-
-  const opt = {
-    margin: [0.5, 0.5, 0.5, 0.5],
-    filename: `${data.fullName.replace(/\s+/g, '_')}_CV.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  // Clone and force light theme for clean PDF output
-  const clone = content.cloneNode(true);
-  applyLightStyles(clone);
-  const wrapper = document.createElement('div');
-  wrapper.appendChild(clone);
-  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;background:#fff;';
-
-  // Temporarily replace, capture, restore
-  const original = content.parentNode.insertBefore(wrapper, content);
-  html2pdf().set(opt).from(wrapper).save().catch(err => {
-    console.error('PDF error:', err);
-    alert('Could not generate PDF. Please try the Print option instead.');
-  }).finally(() => original.remove());
+  const docxStyles = getDocxStyles();
+  const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${data.fullName} - CV</title><style>${docxStyles}</style></head><body>${content.innerHTML}</body></html>`;
+  try {
+    const blob = await HTMLtoDOCX(fullHtml);
+    downloadBlob(blob, `${data.fullName.replace(/\s+/g, '_')}_CV.docx`);
+  } catch (e) {
+    alert('DOCX generation failed: ' + e.message);
+  }
 }
 
-function downloadCoverLetterPDF() {
-  const element = document.getElementById('clPreview');
-  const content = element.querySelector('.cl-content');
+async function downloadCoverLetterDocx() {
+  const content = document.querySelector('#clPreview .cl-content');
   if (!content || !data.fullName) {
     alert('Please fill in your details first to generate a Cover Letter.');
     return;
   }
-
-  const opt = {
-    margin: [0.75, 0.75, 0.75, 0.75],
-    filename: `${data.fullName.replace(/\s+/g, '_')}_Cover_Letter.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  const clone = content.cloneNode(true);
-  applyLightStyles(clone);
-  const wrapper = document.createElement('div');
-  wrapper.appendChild(clone);
-  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;background:#fff;';
-
-  const original = content.parentNode.insertBefore(wrapper, content);
-  html2pdf().set(opt).from(wrapper).save().catch(err => {
-    console.error('PDF error:', err);
-    alert('Could not generate PDF. Please try the Print option instead.');
-  }).finally(() => original.remove());
+  const docxStyles = getDocxStyles();
+  const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${data.fullName} - Cover Letter</title><style>${docxStyles}</style></head><body>${content.innerHTML}</body></html>`;
+  try {
+    const blob = await HTMLtoDOCX(fullHtml);
+    downloadBlob(blob, `${data.fullName.replace(/\s+/g, '_')}_Cover_Letter.docx`);
+  } catch (e) {
+    alert('DOCX generation failed: ' + e.message);
+  }
 }
 
-/* ====== LIGHT STYLES FOR EXPORTS ====== */
-function applyLightStyles(el) {
-  el.querySelectorAll('*').forEach(n => {
-    // Remove any inline color/background
-    if (n.style) n.style.cssText = '';
-  });
-  el.style.cssText = 'color:#333;background:#fff;';
-  // Ensure nested elements inherit
-  const darkBg = el.querySelectorAll('.cl-template-professional');
-  darkBg.forEach(n => { n.style.cssText = (n.style.cssText || '') + 'color:#333;background:#fff;'; });
-}
-
-/* ====== DOCX EXPORT ====== */
-function htmlToDocxBlob(htmlContent, title) {
-  // Strip dark-theme CSS artifacts by cloning and forcing light colors
-  const tmp = document.createElement('div');
-  tmp.innerHTML = htmlContent;
-  applyLightStyles(tmp);
-  const cleanHtml = tmp.innerHTML;
-
-  const fullHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
-  xmlns:w='urn:schemas-microsoft-com:office:word'
-  xmlns='http://www.w3.org/TR/REC-html40'>
-  <head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
-  <style>
-    body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #333; line-height: 1.5; margin: 1in; }
+function getDocxStyles() {
+  return `
+    body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #333; line-height: 1.5; margin: 1in; background: #fff; }
     h1 { font-size: 18pt; margin-bottom: 2pt; color: #333; }
     h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
     p { margin: 4pt 0; color: #333; }
     .cl-content { background:#fff; color:#333; padding:40px 48px; }
-    .cl-template-modern { background:#fff; color:#333; padding:40px 48px; font-family:'Calibri','Segoe UI',Arial,sans-serif; line-height:1.7; }
-    .cl-template-professional { background:#fff; color:#2c3e50; padding:48px 56px; font-family:Georgia,'Times New Roman',serif; line-height:1.8; }
-    .cl-template-minimal { background:#fff; color:#555; padding:32px 40px; font-family:'Calibri','Segoe UI',Arial,sans-serif; line-height:1.7; font-weight:300; }
     .cl-sender { font-weight:700; }
     .cl-template-modern .cl-sender { font-size:1.4rem; color:#6c5ce7; }
     .cl-template-professional .cl-sender { font-size:1.6rem; color:#2c3e50; }
@@ -928,72 +922,17 @@ function htmlToDocxBlob(htmlContent, title) {
     .cv-item-date { color:#999; font-size:10pt; }
     .cv-item-desc { margin-top:2pt; color:#555; }
     .cv-skills-list span { display:inline-block; margin:2pt 4pt 2pt 0; padding:2pt 8pt; background:#eee; border-radius:10pt; color:#555; font-size:9pt; }
-    .cv-template-modern .cv-header { background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:#fff; padding:32px 36px; display:flex; align-items:center; gap:24px; }
-    .cv-template-modern .cv-header h1 { color:#fff; }
-    .cv-template-modern .cv-header .cv-title { color:rgba(255,255,255,0.9); }
-    .cv-template-modern .cv-header .cv-contact span { color:rgba(255,255,255,0.85); }
-    .cv-template-modern .cv-body { padding:24px 36px; display:grid; grid-template-columns:1fr 2fr; gap:24px; }
-    .cv-template-modern .cv-sidebar { border-right:2px solid #f0f0f0; padding-right:24px; }
-    .cv-template-modern .cv-main { padding-left:0; }
-    .cv-template-professional .cv-header { text-align:center; padding:36px 36px 24px; border-bottom:3px double #2c3e50; }
-    .cv-template-professional .cv-header h1 { color:#2c3e50; }
-    .cv-template-professional .cv-header .cv-title { color:#7f8c8d; font-style:italic; }
-    .cv-template-professional .cv-body { padding:24px 36px; }
-    .cv-template-minimal .cv-header { padding:28px 36px 16px; border-bottom:1px solid #e0e0e0; display:flex; align-items:flex-start; gap:20px; }
-    .cv-template-minimal .cv-header h1 { color:#222; font-weight:300; }
-    .cv-template-minimal .cv-header .cv-title { color:#999; }
-    .cv-template-minimal .cv-body { padding:20px 36px; }
-  </style></head><body>${cleanHtml}</body></html>`;
-  return new Blob([fullHtml], { type: 'application/msword' });
+    .cv-header-photo { width:80px; height:80px; border-radius:50%; object-fit:cover; }
+  `;
 }
 
-function downloadCVDocx() {
-  const content = document.querySelector('#cvPreview .cv-content');
-  if (!content || !data.fullName) {
-    alert('Please fill in your details first to generate a CV.');
-    return;
-  }
-  const blob = htmlToDocxBlob(content.innerHTML, `${data.fullName} - CV`);
+function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${data.fullName.replace(/\s+/g, '_')}_CV.doc`;
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-}
-
-function downloadCoverLetterDocx() {
-  const content = document.querySelector('#clPreview .cl-content');
-  if (!content || !data.fullName) {
-    alert('Please fill in your details first to generate a Cover Letter.');
-    return;
-  }
-  const blob = htmlToDocxBlob(content.innerHTML, `${data.fullName} - Cover Letter`);
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${data.fullName.replace(/\s+/g, '_')}_Cover_Letter.doc`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ====== PRINT ====== */
-function printCV() {
-  const content = document.querySelector('#cvPreview .cv-content');
-  if (!content || !data.fullName) {
-    alert('Please fill in your details first.');
-    return;
-  }
-  window.print();
-}
-
-function printCoverLetter() {
-  const content = document.querySelector('#clPreview .cl-content');
-  if (!content || !data.fullName) {
-    alert('Please fill in your details first.');
-    return;
-  }
-  window.print();
 }
 
 /* ====== JSON EXPORT/IMPORT ====== */
@@ -1233,6 +1172,48 @@ function renderProfileList() {
   `).join('');
 }
 
+/* ====== CUSTOM SKILLS (for Job Match) ====== */
+function addCustomSkill() {
+  const nameEl = document.getElementById('customSkillName');
+  const kwEl = document.getElementById('customSkillKeywords');
+  const name = nameEl.value.trim();
+  const keywords = kwEl.value.trim();
+  if (!name || !keywords) { alert('Please enter both a skill name and keywords.'); return; }
+  if (!data.customSkills) data.customSkills = [];
+  const kwList = keywords.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+  data.customSkills.push({ name, keywords: kwList });
+  nameEl.value = '';
+  kwEl.value = '';
+  renderCustomSkills();
+  saveData();
+}
+
+function removeCustomSkill(index) {
+  if (!data.customSkills) return;
+  data.customSkills.splice(index, 1);
+  renderCustomSkills();
+  saveData();
+}
+
+function renderCustomSkills() {
+  const container = document.getElementById('customSkillsContainer');
+  if (!container) return;
+  const skills = data.customSkills || [];
+  if (skills.length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px">No custom keyword mappings yet.</p>';
+    return;
+  }
+  container.innerHTML = skills.map((s, i) =>
+    `<div class="entry-card" style="padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="flex:1">
+        <strong style="font-size:0.85rem">${escapeHtml(s.name)}</strong>
+        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px">${s.keywords.join(', ')}</span>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeCustomSkill(${i})" style="padding:4px 8px;font-size:0.7rem"><i class="fas fa-times"></i></button>
+    </div>`
+  ).join('');
+}
+
 /* ====== JOB MATCH / ATS SCORE ====== */
 const jobMatchSkills = {
   'JavaScript': ['javascript', 'js', 'ecmascript', 'es6', 'es2015', 'es2020'],
@@ -1299,7 +1280,15 @@ function calculateJobMatch(jobDesc) {
   const missingSkills = [];
   const userSkillLower = data.skills.map(s => s.toLowerCase());
 
-  for (const [skill, keywords] of Object.entries(jobMatchSkills)) {
+  // Merge custom skills into the keyword map
+  const mergedSkills = { ...jobMatchSkills };
+  (data.customSkills || []).forEach(cs => {
+    if (cs.name && cs.keywords.length > 0) {
+      mergedSkills[cs.name] = cs.keywords;
+    }
+  });
+
+  for (const [skill, keywords] of Object.entries(mergedSkills)) {
     const foundInJob = keywords.some(k => lowerJobDesc.includes(k));
     if (!foundInJob) continue;
 
@@ -1488,6 +1477,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   renderProfileList();
 
+  // Custom skills
+  renderCustomSkills();
+
   // Set active template button
   $$('.template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === data.template));
   $$('.cl-template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === data.clTemplate));
@@ -1503,3 +1495,35 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('SmartCV AI initialized successfully.');
   console.log('Keyboard shortcuts: Ctrl+1 Dashboard, Ctrl+2 CV Builder, Ctrl+3 Cover Letter, Ctrl+4 Settings, Ctrl+5 Job Match');
 });
+
+// Expose functions globally for onclick handlers in HTML
+window.switchTab = switchTab;
+window.setTheme = setTheme;
+window.addEducation = addEducation;
+window.removeEducation = removeEducation;
+window.addExperience = addExperience;
+window.removeExperience = removeExperience;
+window.addSkill = addSkill;
+window.removeSkill = removeSkill;
+window.addProject = addProject;
+window.removeProject = removeProject;
+window.addReference = addReference;
+window.removeReference = removeReference;
+window.setTemplate = setTemplate;
+window.setClTemplate = setClTemplate;
+window.regenerateCoverLetter = regenerateCoverLetter;
+window.downloadCVPdf = downloadCVPdf;
+window.downloadCVDocx = downloadCVDocx;
+window.downloadCoverLetterPDF = downloadCoverLetterPDF;
+window.downloadCoverLetterDocx = downloadCoverLetterDocx;
+window.printCV = printCV;
+window.printCoverLetter = printCoverLetter;
+window.exportJSON = exportJSON;
+window.importJSON = importJSON;
+window.clearAllData = clearAllData;
+window.createProfile = createProfile;
+window.generateAICV = generateAICV;
+window.generateAICoverLetter = generateAICoverLetter;
+window.analyzeJobMatch = analyzeJobMatch;
+window.addCustomSkill = addCustomSkill;
+window.removeCustomSkill = removeCustomSkill;

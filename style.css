@@ -2416,29 +2416,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   border-color: transparent;
 }
 
-/* ====== PRINT STYLES ====== */
-@media print {
-  body * { visibility: hidden; }
-  .cv-preview, .cv-preview * { visibility: visible; }
-  .cl-preview, .cl-preview * { visibility: visible; }
-  .cv-preview, .cl-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-  }
-  .sidebar, .topbar, .builder-form, .preview-toolbar {
-    display: none !important;
-  }
-  @page {
-    margin: 0.5in;
-    size: A4;
-  }
-}
+
 
 /* ====== UTILITY ANIMATIONS ====== */
 @keyframes pulse {
