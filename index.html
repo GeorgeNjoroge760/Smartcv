@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartCV AI - Professional CV & Cover Letter Generator</title>
   <meta name="description" content="Create professional CVs and cover letters with SmartCV AI">
+  <meta property="og:title" content="SmartCV AI - Professional CV & Cover Letter Generator">
+  <meta property="og:description" content="Build professional CVs and cover letters in minutes. Generate, customize, and export your career documents with AI-powered tools.">
+  <meta property="og:image" content="https://smartcv-generator.vercel.app/og-image.svg">
+  <meta property="og:url" content="https://smartcv-generator.vercel.app">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SmartCV AI">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SmartCV AI - Professional CV & Cover Letter Generator">
+  <meta name="twitter:description" content="Build professional CVs and cover letters in minutes. Generate, customize, and export your career documents with AI-powered tools.">
+  <meta name="twitter:image" content="https://smartcv-generator.vercel.app/og-image.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -49,6 +59,10 @@
         <i class="fas fa-chart-line"></i>
         <span>Job Match</span>
       </a>
+      <a href="#" class="nav-item" data-tab="share">
+        <i class="fas fa-share-alt"></i>
+        <span>Share</span>
+      </a>
     </nav>
     <div class="sidebar-footer">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -79,6 +93,9 @@
       </div>
       <div class="topbar-actions">
         <div class="save-indicator" id="saveIndicator"></div>
+        <button class="btn btn-sm btn-primary" onclick="switchTab('share')" title="Share SmartCV AI">
+          <i class="fas fa-share-alt"></i> Share
+        </button>
         <button class="btn btn-sm btn-outline" onclick="exportJSON()" title="Export Data">
           <i class="fas fa-download"></i> Export
         </button>
@@ -474,6 +491,59 @@
             <h3>No analysis yet</h3>
             <p>Paste a job description and click "Analyze Match" to see your score</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SHARE TAB ====== -->
+    <section class="tab-content" id="tab-share">
+      <div class="share-hero glass">
+        <div class="share-hero-icon"><i class="fas fa-brain"></i></div>
+        <h2>Share SmartCV AI</h2>
+        <p>Help others discover the easiest way to build professional CVs and cover letters.</p>
+      </div>
+
+      <div class="share-grid">
+        <div class="share-card glass">
+          <h3><i class="fas fa-link"></i> Share Link</h3>
+          <p class="text-muted">Copy the direct link to share anywhere.</p>
+          <div class="share-link-row">
+            <input type="text" id="shareLinkInput" value="https://smartcv-generator.vercel.app" readonly>
+            <button class="btn btn-primary" onclick="copyShareLink()"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+          <div class="share-copied-msg" id="shareCopiedMsg"><i class="fas fa-check-circle"></i> Link copied to clipboard!</div>
+        </div>
+
+        <div class="share-card glass">
+          <h3><i class="fas fa-globe"></i> Share on Social</h3>
+          <p class="text-muted">Spread the word with one click.</p>
+          <div class="share-social-buttons">
+            <button class="share-btn share-btn-twitter" onclick="shareOnTwitter()">
+              <i class="fab fa-twitter"></i> Twitter / X
+            </button>
+            <button class="share-btn share-btn-linkedin" onclick="shareOnLinkedIn()">
+              <i class="fab fa-linkedin"></i> LinkedIn
+            </button>
+            <button class="share-btn share-btn-whatsapp" onclick="shareOnWhatsApp()">
+              <i class="fab fa-whatsapp"></i> WhatsApp
+            </button>
+            <button class="share-btn share-btn-email" onclick="shareViaEmail()">
+              <i class="fas fa-envelope"></i> Email
+            </button>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="shareNative()" id="shareNativeBtn">
+            <i class="fas fa-share-alt"></i> Share via...
+          </button>
+        </div>
+
+        <div class="share-card glass">
+          <h3><i class="fas fa-code"></i> Embed Badge</h3>
+          <p class="text-muted">Add a SmartCV AI badge to your portfolio or website.</p>
+          <div class="share-link-row">
+            <input type="text" id="shareEmbedInput" value='&lt;a href="https://smartcv-generator.vercel.app" target="_blank" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border-radius:8px;font-family:sans-serif;font-weight:600;text-decoration:none"&gt;⚡ Built with SmartCV AI&lt;/a&gt;' readonly>
+            <button class="btn btn-primary" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+          <div class="share-copied-msg" id="embedCopiedMsg"><i class="fas fa-check-circle"></i> Embed code copied!</div>
         </div>
       </div>
     </section>

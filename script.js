@@ -113,7 +113,7 @@ function switchTab(tab) {
   $(`#tab-${tab}`).classList.add('active');
   $$('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
 
-  const titles = { dashboard: 'Dashboard', builder: 'CV Builder', coverletter: 'Cover Letter', settings: 'Settings', jobmatch: 'Job Match' };
+  const titles = { dashboard: 'Dashboard', builder: 'CV Builder', coverletter: 'Cover Letter', settings: 'Settings', jobmatch: 'Job Match', share: 'Share' };
   $('#pageTitle').textContent = titles[tab] || 'Dashboard';
 
   if (tab === 'builder' || tab === 'coverletter') {
@@ -990,6 +990,76 @@ function clearAllData() {
   updateDashboard();
 }
 
+/* ====== SHARE FUNCTIONS ====== */
+const SHARE_URL = 'https://smartcv-generator.vercel.app';
+const SHARE_TEXT = 'Build professional CVs and cover letters in minutes with SmartCV AI — free, fast, and AI-powered.';
+
+function copyShareLink() {
+  const input = document.getElementById('shareLinkInput');
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value).then(() => {
+    const msg = document.getElementById('shareCopiedMsg');
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 2500);
+  }).catch(() => {
+    document.execCommand('copy');
+    const msg = document.getElementById('shareCopiedMsg');
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 2500);
+  });
+}
+
+function copyEmbedCode() {
+  const input = document.getElementById('shareEmbedInput');
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value).then(() => {
+    const msg = document.getElementById('embedCopiedMsg');
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 2500);
+  }).catch(() => {
+    document.execCommand('copy');
+    const msg = document.getElementById('embedCopiedMsg');
+    msg.classList.add('visible');
+    setTimeout(() => msg.classList.remove('visible'), 2500);
+  });
+}
+
+function shareNative() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'SmartCV AI',
+      text: SHARE_TEXT,
+      url: SHARE_URL,
+    }).catch(() => {});
+  } else {
+    copyShareLink();
+  }
+}
+
+function shareOnTwitter() {
+  const text = encodeURIComponent(SHARE_TEXT + ' ' + SHARE_URL);
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'width=600,height=400');
+}
+
+function shareOnLinkedIn() {
+  const url = encodeURIComponent(SHARE_URL);
+  const title = encodeURIComponent('SmartCV AI - Professional CV & Cover Letter Generator');
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}`, '_blank', 'width=600,height=500');
+}
+
+function shareOnWhatsApp() {
+  const text = encodeURIComponent(SHARE_TEXT + ' ' + SHARE_URL);
+  window.open(`https://wa.me/?text=${text}`, '_blank', 'width=600,height=500');
+}
+
+function shareViaEmail() {
+  const subject = encodeURIComponent('Check out SmartCV AI - CV & Cover Letter Generator');
+  const body = encodeURIComponent(SHARE_TEXT + '\n\n' + SHARE_URL);
+  window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+}
+
 /* ====== AI PLACEHOLDER FUNCTIONS ====== */
 function generateAICV() {
   const apiKey = data.apiKey;
@@ -1527,3 +1597,10 @@ window.generateAICoverLetter = generateAICoverLetter;
 window.analyzeJobMatch = analyzeJobMatch;
 window.addCustomSkill = addCustomSkill;
 window.removeCustomSkill = removeCustomSkill;
+window.copyShareLink = copyShareLink;
+window.copyEmbedCode = copyEmbedCode;
+window.shareNative = shareNative;
+window.shareOnTwitter = shareOnTwitter;
+window.shareOnLinkedIn = shareOnLinkedIn;
+window.shareOnWhatsApp = shareOnWhatsApp;
+window.shareViaEmail = shareViaEmail;
