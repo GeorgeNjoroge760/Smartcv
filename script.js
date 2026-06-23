@@ -121,6 +121,7 @@ function switchTab(tab) {
     renderCoverLetter();
   }
   updateDashboard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ====== FORM HANDLING ====== */
