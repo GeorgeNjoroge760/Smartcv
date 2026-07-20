@@ -2617,3 +2617,321 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     font-size: 0.95rem;
   }
 }
+
+/* ====== MODAL ====== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text-primary); }
+
+.modal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.modal-tab.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: transparent;
+}
+
+.modal-form .form-group { margin-bottom: 16px; }
+
+.auth-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  min-height: 20px;
+  margin-bottom: 8px;
+}
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
+.auth-switch a {
+  color: var(--accent-primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-switch a:hover { text-decoration: underline; }
+
+/* ====== PRO BADGE ====== */
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+/* ====== USAGE BANNER ====== */
+.usage-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+  font-size: 0.82rem;
+  color: var(--warning);
+  font-weight: 500;
+}
+
+.usage-banner .btn {
+  padding: 4px 12px;
+  font-size: 0.72rem;
+}
+
+/* ====== UPGRADE MODAL ====== */
+.upgrade-content {
+  text-align: center;
+}
+
+.upgrade-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 1.8rem;
+  color: #fff;
+}
+
+.upgrade-content h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.upgrade-content > p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.upgrade-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.upgrade-features li {
+  padding: 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upgrade-features li i {
+  color: var(--success);
+  font-size: 0.85rem;
+}
+
+.upgrade-pricing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.price-card {
+  padding: 20px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.price-card:hover, .price-card.popular {
+  border-color: var(--accent-primary);
+}
+
+.price-card.popular {
+  background: rgba(108, 92, 231, 0.05);
+}
+
+.price-popular-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 12px;
+  border-radius: 10px;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.price-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.price-amount {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.price-period {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ====== EMAIL CAPTURE ====== */
+.email-capture {
+  margin-top: 24px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.email-capture-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.email-capture-content > i {
+  font-size: 2rem;
+  color: var(--accent-primary);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.email-capture-content h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.email-capture-content p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.email-capture-form {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.email-capture-form input {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 200px;
+}
+
+.email-capture-form input:focus {
+  border-color: var(--accent-primary);
+}
+
+/* ====== CV WATERMARK ====== */
+.cv-watermark {
+  text-align: center;
+  padding: 8px;
+  font-size: 0.65rem;
+  color: #aaa;
+  border-top: 1px solid #eee;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .email-capture {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .email-capture-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .email-capture-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  .email-capture-form input {
+    min-width: 100%;
+  }
+  .upgrade-pricing {
+    grid-template-columns: 1fr;
+  }
+  .modal {
+    padding: 24px;
+  }
+}

@@ -1,192 +1,139 @@
 # SmartCV AI — Professional CV & Cover Letter Generator
 
-A fully client-side web application for building professional CVs and cover letters with AI-powered enhancements, multiple templates, job matching, and PDF/DOCX export.
-
----
+A full-stack web application for building professional CVs and cover letters with AI-powered enhancements, multiple templates, job matching, and PDF/DOCX export.
 
 ## Features
 
-### CV Builder
-- Multi-section form: Personal Info, Professional Summary, Education, Work Experience, Skills, Projects, References
-- Live preview with **3 templates**: Modern, Professional, Minimal
-- Photo upload with drag & drop
-- Section-by-section navigation
-- Auto-save to browser local storage
+- **CV Builder** — Multi-section form with 3 templates, live preview, photo upload
+- **Cover Letter Generator** — 3 letter styles, AI generation or manual fill
+- **AI Integration** — OpenAI GPT-4o-mini for CV enhancement and cover letter writing
+- **Job Match / ATS Score** — Scans 40+ skill categories against job descriptions
+- **Multiple CV Profiles** — Separate profiles for different job applications
+- **Export** — PDF (html2pdf.js), DOCX (html-to-docx), Print, JSON backup
+- **Dark/Light Theme** — Smooth transitions, fully responsive
+- **Keyboard Shortcuts** — Ctrl+Z undo, Ctrl+Y redo, Ctrl+S save
 
-### Cover Letter Generator
-- Company, position, hiring manager fields
-- **3 letter styles**: Modern, Professional, Minimal
-- AI generation (OpenAI) or manual fill
-- Live preview
+## Architecture
 
-### AI Integration (OpenAI)
-- **Enhance CV** — sends your profile to GPT-4o-mini and writes an optimized professional summary
-- **Generate Cover Letter** — produces a complete, ready-to-send cover letter tailored to the job
-- Requires an OpenAI API key (entered in Settings)
-
-### Job Match / ATS Score
-- Paste a job description → the app scans for 40+ skill categories
-- Compares against your CV skills, experience, and qualifications
-- Shows a **match percentage**, matched skills, missing skills, and experience gap
-- Helps you tailor your CV for specific applications
-
-### Multiple CV Profiles
-- Create separate profiles for different job applications
-- Switch profiles from the topbar dropdown
-- Each profile stores its own complete CV data
-- Rename and delete profiles from Settings
-
-### Export Options
-- **PDF** — via html2pdf.js, A4 formatted
-- **DOCX** — Word-compatible .doc files (opens in Word, Google Docs)
-- **Print** — browser print with clean styles
-- **JSON** — export/import all data for backup
-
-### Dashboard
-- CV completion score with progress bar
-- Stats: skills count, experience count, project count
-- **Smart Tips** — analyzes 11 areas and shows the top 5 improvement suggestions (clickable, navigates to the relevant section)
-- Quick action cards for downloads
-
-### Theme & UX
-- Dark/Light theme with smooth transitions
-- Fully responsive — works on desktop, tablet, and mobile
-- Keyboard shortcuts: `Ctrl+1`–`Ctrl+5` for tab navigation
-- Auto-save indicator in the topbar
-
----
+```
+Smartcv/
+├── src/                    # Frontend ES modules
+│   ├── main.js            # Entry point, initialization
+│   ├── api.js             # Backend API client
+│   ├── auth.js            # Authentication UI & logic
+│   ├── store.js           # Data store with undo/redo
+│   ├── cv.js              # CV rendering
+│   ├── coverLetter.js     # Cover letter rendering
+│   ├── export.js          # PDF/DOCX/Print export
+│   ├── ai.js              # AI features & job match
+│   └── analytics.js       # Analytics tracking
+├── server/                 # Express backend
+│   ├── index.js           # Server entry point
+│   ├── db/                # Supabase setup
+│   ├── middleware/         # Auth, rate limiting, tier guard
+│   └── routes/            # API routes (auth, AI, payments, user)
+├── tests/                  # Vitest unit tests
+├── index.html             # Main HTML
+├── style.css              # All styles
+└── vite.config.js         # Vite config
+```
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| UI | HTML5, CSS3 (vanilla) |
-| Logic | JavaScript (vanilla, no frameworks) |
-| Storage | Browser `localStorage` |
-| AI | OpenAI REST API (`gpt-4o-mini`) |
-| PDF | html2pdf.js CDN |
-| Icons | Font Awesome 6 |
-| Fonts | Google Fonts (Inter, Playfair Display) |
-| Hosting | Any static host (GitHub Pages, Netlify, Vercel) |
+| Frontend | HTML5, CSS3, JavaScript (ES modules) |
+| Backend | Node.js, Express |
+| Database | Supabase (PostgreSQL + Auth) |
+| Payments | Stripe (subscriptions) |
+| AI | OpenAI API (gpt-4o-mini) |
+| PDF | html2pdf.js |
+| DOCX | html-to-docx |
+| Build | Vite |
+| Tests | Vitest |
 
-No build step, no dependencies to install — open `index.html` in a browser and it works.
+## Setup
 
----
-
-## Project Structure
-
-```
-Smartcv/
-├── index.html        # Main HTML — all sections, sidebar, topbar
-├── style.css         # All styles — variables, layout, templates, responsive, dark mode
-├── script.js         # All logic — data, profiles, renderers, export, AI, job match
-└── README.md         # This file
-```
-
-**Key architecture decisions:**
-- Single-page application (SPA) — no page reloads
-- All data is reactive through a single `data` object
-- Profiles wrap the `data` object; switching profiles swaps it out
-- Templates use CSS classes applied dynamically
-- AI calls are direct `fetch()` — no backend proxy needed
-
----
-
-## How to Use
-
-1. **Open** `index.html` in any browser (or deploy to any static host)
-2. **Build your CV** — fill in details in the CV Builder tab, preview updates live
-3. **Add AI power** (optional) — get an API key from [platform.openai.com](https://platform.openai.com/api-keys), paste in Settings → AI Integration
-4. **Generate documents** — download as PDF, DOCX, or print
-5. **Use Job Match** — paste a job description to see how well your CV fits
-6. **Create profiles** — use different CVs for different roles via Settings → Profiles
-
----
-
-## Monetization Ideas
-
-### 1. Freemium SaaS
-- **Free tier**: 1 CV profile, basic templates, manual cover letter, PDF export
-- **Pro tier** ($5–$10/mo): Unlimited profiles, all templates, AI enhancement, Job Match, DOCX export, priority support
-
-### 2. One-Time Purchase
-- Sell the full app as a downloadable/customizable package on platforms like Gumroad or CodeCanyon
-- Price: $15–$30
-
-### 3. White-Label / Resell
-- License the app to recruitment agencies, universities, or career coaching firms
-- They rebrand it with their logo and offer it to their clients
-- Monthly or per-seat pricing
-
-### 4. AI Token-Based Model
-- Free app usage, but AI features cost "credits"
-- Users buy credit packs ($5 for 10 AI generations)
-- Low commitment, encourages trial
-
-### 5. Affiliate Revenue
-- Partner with job boards (LinkedIn, Indeed) or online course platforms
-- Recommend relevant services inside the app
-- Include resume-writing service affiliates
-
-### 6. Premium Templates
-- Free: 3 basic templates
-- Paid: 15+ designer templates ($2–$5 each or bundle)
-
-### 7. Job Match as a Lead Generator
-- Offer the Job Match tool for free
-- Capture email when they run an analysis
-- Upsell to full CV writing service or career coaching
-
-### 8. Subscription via Stripe/Paddle
-- Add a simple payment portal
-- Pro features unlocked after payment
-- Use GitHub Pages + a lightweight backend (or client-side unlock with license keys)
-
----
-
-## Roadmap Ideas
-
-| Feature | Status |
-|---------|--------|
-| CV Builder + 3 templates | ✅ Done |
-| Cover Letter + 3 styles | ✅ Done |
-| Dark/Light theme | ✅ Done |
-| PDF Export | ✅ Done |
-| DOCX Export | ✅ Done |
-| Multiple CV Profiles | ✅ Done |
-| AI Integration (OpenAI) | ✅ Done |
-| Job Match / ATS Score | ✅ Done |
-| Auto-save Indicator | ✅ Done |
-| Mobile responsiveness | ✅ Done |
-| CV Scoring Tips | ✅ Done |
-| Drag & drop reordering | 📋 Planned |
-| Section visibility toggles | 📋 Planned |
-| Custom user sections | 📋 Planned |
-| Spell/grammar check | 📋 Planned |
-| LinkedIn import | 📋 Planned |
-| Premium templates | 📋 Planned |
-| Payment/Subscription | 📋 Planned |
-| Backend sync (cloud save) | 📋 Planned |
-
----
-
-## Development
-
-No build tools required. Edit the files directly:
-
+### 1. Install dependencies
 ```bash
-# Clone
-git clone https://github.com/GeorgeNjoroge760/Smartcv.git
-
-# Open in browser
-cd Smartcv
-start index.html
+npm install
 ```
 
-Make changes to `index.html`, `style.css`, or `script.js` and refresh to see them.
+### 2. Configure environment
+```bash
+cp .env.example .env
+# Fill in your Supabase, Stripe, and OpenAI keys
+```
 
----
+### 3. Set up database
+Paste the SQL from `server/db/setup.js` into your Supabase SQL Editor.
+
+### 4. Run development
+```bash
+npm run dev          # Both frontend + backend
+npm run dev:client   # Frontend only (Vite)
+npm run dev:server   # Backend only
+```
+
+### 5. Run tests
+```bash
+npm test
+```
+
+### 6. Build for production
+```bash
+npm run build
+npm start
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_KEY` | Supabase service role key |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `STRIPE_PRICE_PRO_MONTHLY` | Stripe price ID for monthly pro |
+| `OPENAI_API_KEY` | OpenAI API key |
+| `PORT` | Server port (default: 3000) |
+| `CLIENT_URL` | Frontend URL (default: http://localhost:5173) |
+
+## Monetization
+
+### Free Tier
+- 1 CV profile
+- Basic templates
+- Manual cover letter
+- PDF export (with watermark)
+- 5 AI uses per day
+- Basic job match
+
+### Pro Tier ($5/mo or $40/yr)
+- Unlimited profiles
+- All templates
+- AI-enhanced CV & cover letters
+- No watermarks
+- Cloud save & sync
+- Priority support
+
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/signup` | No | Create account |
+| POST | `/api/auth/signin` | No | Sign in |
+| GET | `/api/auth/me` | Yes | Get current user |
+| POST | `/api/ai/enhance-cv` | Yes | AI CV enhancement |
+| POST | `/api/ai/generate-cover-letter` | Yes | AI cover letter |
+| POST | `/api/ai/job-analysis` | Yes | AI job match |
+| POST | `/api/payments/create-checkout` | Yes | Create Stripe checkout |
+| POST | `/api/payments/webhook` | No | Stripe webhook |
+| GET | `/api/payments/status` | Yes | Subscription status |
+| PUT | `/api/user/cv-data` | Yes | Save CV data |
+| POST | `/api/user/subscribe` | No | Email subscriber |
 
 ## License
 
-MIT — free to use, modify, and distribute.
+MIT
