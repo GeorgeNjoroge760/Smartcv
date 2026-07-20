@@ -1,4 +1,6 @@
-const BASE = '/api';
+// Set this to your backend URL (e.g. https://smartcv-api.onrender.com)
+// Once deployed, update this value or set window.__API_BASE__ before main.js loads
+const BASE = window.__API_BASE__ || '/api';
 
 let _token = null;
 let _backendAvailable = null; // null = unknown, true/false after first check
