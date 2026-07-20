@@ -1,3 +1,4 @@
+import html2pdf from 'html2pdf.js';
 import { getData } from './store.js';
 import { trackExport } from './analytics.js';
 
@@ -15,29 +16,26 @@ export function downloadCVPdf() {
   const el = document.querySelector('#cvPreview .cv-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  if (!window.html2pdf) { alert('PDF library is still loading. Please try again.'); return; }
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cv_pdf');
-  window.html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el);
+  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el);
 }
 
 export function downloadCoverLetterPDF() {
   const el = document.querySelector('#clPreview .cl-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  if (!window.html2pdf) { alert('PDF library is still loading. Please try again.'); return; }
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cl_pdf');
-  window.html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el);
+  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el);
 }
 
 export function printCV() {
   const el = document.querySelector('#cvPreview .cv-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  if (!window.html2pdf) { alert('PDF library is still loading. Please try again.'); return; }
   trackExport('cv_print');
-  window.html2pdf().set(getPdfOpt(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+  html2pdf().set(getPdfOpt(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
   });
 }
@@ -46,9 +44,8 @@ export function printCoverLetter() {
   const el = document.querySelector('#clPreview .cl-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  if (!window.html2pdf) { alert('PDF library is still loading. Please try again.'); return; }
   trackExport('cl_print');
-  window.html2pdf().set(getPdfOpt(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+  html2pdf().set(getPdfOpt(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
   });
 }
