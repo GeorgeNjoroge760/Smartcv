@@ -1,0 +1,6 @@
+{
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "npm install --omit=dev --ignore-scripts 2>/dev/null || npm install"
+}
