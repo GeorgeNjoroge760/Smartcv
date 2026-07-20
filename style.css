@@ -66,6 +66,7 @@
 [data-theme="dark"] .cv-item-title { color: #f0f0f8; }
 [data-theme="dark"] .cv-item-date { color: #9ca3af; }
 [data-theme="dark"] .cv-item-desc { color: #c0c0d0; }
+[data-theme="dark"] .cv-item-group h3 { color: #a29bfe; border-bottom-color: #444; }
 
 [data-theme="dark"] .cv-template-modern .cv-header {
   background: linear-gradient(135deg, #5a4bd1, #8b7cf7);
@@ -1229,6 +1230,21 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   font-size: 0.82rem;
   color: #666;
   line-height: 1.5;
+}
+
+.cv-item-group {
+  margin-bottom: 16px;
+}
+
+.cv-item-group h3 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6c5ce7;
+  font-weight: 700;
+  margin-bottom: 6px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .cv-skills-list {

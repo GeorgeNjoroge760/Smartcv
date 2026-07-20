@@ -45,8 +45,10 @@ function renderAll() {
   renderSkills();
   renderEducation();
   renderExperience();
-  renderProjects();
-  renderReferences();
+  renderCertifications();
+  renderLanguages();
+  renderPublications();
+  renderVolunteerWork();
   renderCustomSkills();
   renderProfileList();
   updateProfileSelector();
@@ -207,13 +209,13 @@ function updateDashboard() {
 
   const eduScore = Math.min(d.education.length, 3);
   const expScore = Math.min(d.experience.length, 3);
-  const projScore = Math.min(d.projects.length, 3);
+  const certScore = Math.min((d.certifications || []).length, 2);
+  const langScore = Math.min((d.languages || []).length, 2);
   const skillScore = Math.min(d.skills.length, 5);
-  const refScore = Math.min(d.references.length, 2);
   const photoScore = d.photo ? 0.5 : 0;
 
-  const totalPossible = 6 + 0.5 + 3 + 3 + 3 + 5 + 2;
-  const currentScore = filled + photoScore + eduScore + expScore + projScore + skillScore + refScore;
+  const totalPossible = 6 + 0.5 + 3 + 3 + 2 + 2 + 5;
+  const currentScore = filled + photoScore + eduScore + expScore + certScore + langScore + skillScore;
   const percent = Math.min(Math.round((currentScore / totalPossible) * 100), 100);
 
   const ce = document.getElementById('completionPercent');
@@ -226,7 +228,7 @@ function updateDashboard() {
   if (cf) cf.style.width = percent + '%';
   if (sc) sc.textContent = d.skills.length;
   if (ec) ec.textContent = d.experience.length;
-  if (pc) pc.textContent = d.projects.length;
+  if (pc) pc.textContent = (d.education || []).length;
 
   renderTips();
 }
@@ -245,7 +247,7 @@ function renderTips() {
   if (d.experience.length === 0) tips.push({ icon: 'fa-briefcase', text: 'Add work experience to strengthen your CV.', action: 'builder', priority: 1 });
   if (d.skills.length < 3) tips.push({ icon: 'fa-code', text: 'Add more skills — aim for at least 5 relevant skills.', action: 'builder', priority: 2 });
   if (d.education.length === 0) tips.push({ icon: 'fa-graduation-cap', text: 'Add your education background.', action: 'builder', priority: 2 });
-  if (d.projects.length === 0) tips.push({ icon: 'fa-project-diagram', text: 'Add projects to demonstrate your practical experience.', action: 'builder', priority: 3 });
+  if ((d.certifications || []).length === 0) tips.push({ icon: 'fa-certificate', text: 'Add certifications to strengthen your profile.', action: 'builder', priority: 3 });
 
   tips.sort((a, b) => a.priority - b.priority);
   const showTips = tips.slice(0, 5);
@@ -416,100 +418,215 @@ function renderExperience() {
   });
 }
 
-// ---- Projects ----
+// ---- Certifications ----
 
-function renderProjects() {
-  const container = document.getElementById('projectsContainer');
+function renderCertifications() {
+  const container = document.getElementById('certificationsContainer');
   if (!container) return;
   const d = getData();
-  if (d.projects.length === 0) {
-    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No projects yet.</p>';
+  if ((d.certifications || []).length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No certifications yet.</p>';
     return;
   }
-  container.innerHTML = d.projects.map((proj, i) => `
-    <div class="entry-card" data-proj-index="${i}">
+  container.innerHTML = d.certifications.map((cert, i) => `
+    <div class="entry-card" data-cert-index="${i}">
       <div class="entry-header">
-        <h4><i class="fas fa-folder"></i> Project #${i + 1}</h4>
-        <button class="entry-remove" data-remove-proj="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
+        <h4><i class="fas fa-certificate"></i> Certification #${i + 1}</h4>
+        <button class="entry-remove" data-remove-cert="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
       </div>
       <div class="form-group">
-        <label>Project Name</label>
-        <input type="text" value="${escapeAttr(proj.name)}" data-proj-field="name" data-proj-idx="${i}" placeholder="Project name">
+        <label>Certification Name</label>
+        <input type="text" value="${escapeAttr(cert.name)}" data-cert-field="name" data-cert-idx="${i}" placeholder="e.g. AWS Solutions Architect">
       </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea rows="3" data-proj-field="description" data-proj-idx="${i}" placeholder="Brief description...">${escapeAttr(proj.description)}</textarea>
-      </div>
-      <div class="form-group">
-        <label>Technologies Used</label>
-        <input type="text" value="${escapeAttr(proj.technologies)}" data-proj-field="technologies" data-proj-idx="${i}" placeholder="e.g. React, Node.js">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Issuing Organization</label>
+          <input type="text" value="${escapeAttr(cert.issuer)}" data-cert-field="issuer" data-cert-idx="${i}" placeholder="e.g. Amazon Web Services">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" value="${escapeAttr(cert.date)}" data-cert-field="date" data-cert-idx="${i}" placeholder="e.g. 2024">
+        </div>
       </div>
     </div>
   `).join('');
 
-  container.querySelectorAll('[data-remove-proj]').forEach(btn => {
+  container.querySelectorAll('[data-remove-cert]').forEach(btn => {
     btn.addEventListener('click', () => {
-      d.projects.splice(parseInt(btn.dataset.removeProj), 1);
-      renderProjects();
+      d.certifications.splice(parseInt(btn.dataset.removeCert), 1);
+      renderCertifications();
       saveLocal();
       renderCV();
     });
   });
-
-  container.querySelectorAll('[data-proj-field]').forEach(input => {
+  container.querySelectorAll('[data-cert-field]').forEach(input => {
     input.addEventListener('input', () => {
-      const idx = parseInt(input.dataset.projIdx);
-      d.projects[idx][input.dataset.projField] = input.value;
+      const idx = parseInt(input.dataset.certIdx);
+      d.certifications[idx][input.dataset.certField] = input.value;
       saveLocal();
       scheduleRender();
     });
   });
 }
 
-// ---- References ----
+// ---- Languages ----
 
-function renderReferences() {
-  const container = document.getElementById('referencesContainer');
+function renderLanguages() {
+  const container = document.getElementById('languagesContainer');
   if (!container) return;
   const d = getData();
-  if (d.references.length === 0) {
-    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No references yet.</p>';
+  if ((d.languages || []).length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No languages yet.</p>';
     return;
   }
-  container.innerHTML = d.references.map((ref, i) => `
-    <div class="entry-card" data-ref-index="${i}">
+  container.innerHTML = d.languages.map((lang, i) => `
+    <div class="entry-card" data-lang-index="${i}">
       <div class="entry-header">
-        <h4><i class="fas fa-user"></i> Reference #${i + 1}</h4>
-        <button class="entry-remove" data-remove-ref="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
+        <h4><i class="fas fa-globe"></i> Language #${i + 1}</h4>
+        <button class="entry-remove" data-remove-lang="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
       </div>
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" value="${escapeAttr(ref.name)}" data-ref-field="name" data-ref-idx="${i}" placeholder="Reference name">
-      </div>
-      <div class="form-group">
-        <label>Position</label>
-        <input type="text" value="${escapeAttr(ref.position)}" data-ref-field="position" data-ref-idx="${i}" placeholder="e.g. Senior Manager">
-      </div>
-      <div class="form-group">
-        <label>Contact Information</label>
-        <input type="text" value="${escapeAttr(ref.contact)}" data-ref-field="contact" data-ref-idx="${i}" placeholder="Email or phone">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Language</label>
+          <input type="text" value="${escapeAttr(lang.name)}" data-lang-field="name" data-lang-idx="${i}" placeholder="e.g. Spanish">
+        </div>
+        <div class="form-group">
+          <label>Proficiency Level</label>
+          <select data-lang-field="level" data-lang-idx="${i}" class="form-control">
+            <option value="" ${!lang.level ? 'selected' : ''}>Select level</option>
+            <option value="Native" ${lang.level === 'Native' ? 'selected' : ''}>Native</option>
+            <option value="Fluent" ${lang.level === 'Fluent' ? 'selected' : ''}>Fluent</option>
+            <option value="Advanced" ${lang.level === 'Advanced' ? 'selected' : ''}>Advanced</option>
+            <option value="Intermediate" ${lang.level === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
+            <option value="Beginner" ${lang.level === 'Beginner' ? 'selected' : ''}>Beginner</option>
+          </select>
+        </div>
       </div>
     </div>
   `).join('');
 
-  container.querySelectorAll('[data-remove-ref]').forEach(btn => {
+  container.querySelectorAll('[data-remove-lang]').forEach(btn => {
     btn.addEventListener('click', () => {
-      d.references.splice(parseInt(btn.dataset.removeRef), 1);
-      renderReferences();
+      d.languages.splice(parseInt(btn.dataset.removeLang), 1);
+      renderLanguages();
       saveLocal();
       renderCV();
     });
   });
-
-  container.querySelectorAll('[data-ref-field]').forEach(input => {
+  container.querySelectorAll('[data-lang-field]').forEach(input => {
     input.addEventListener('input', () => {
-      const idx = parseInt(input.dataset.refIdx);
-      d.references[idx][input.dataset.refField] = input.value;
+      const idx = parseInt(input.dataset.langIdx);
+      d.languages[idx][input.dataset.langField] = input.value;
+      saveLocal();
+      scheduleRender();
+    });
+  });
+}
+
+// ---- Publications ----
+
+function renderPublications() {
+  const container = document.getElementById('publicationsContainer');
+  if (!container) return;
+  const d = getData();
+  if ((d.publications || []).length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No publications yet.</p>';
+    return;
+  }
+  container.innerHTML = d.publications.map((pub, i) => `
+    <div class="entry-card" data-pub-index="${i}">
+      <div class="entry-header">
+        <h4><i class="fas fa-book"></i> Publication #${i + 1}</h4>
+        <button class="entry-remove" data-remove-pub="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" value="${escapeAttr(pub.title)}" data-pub-field="title" data-pub-idx="${i}" placeholder="Publication title">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Publisher / Journal</label>
+          <input type="text" value="${escapeAttr(pub.publisher)}" data-pub-field="publisher" data-pub-idx="${i}" placeholder="e.g. IEEE, Nature">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" value="${escapeAttr(pub.date)}" data-pub-field="date" data-pub-idx="${i}" placeholder="e.g. 2024">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>URL (optional)</label>
+        <input type="url" value="${escapeAttr(pub.url)}" data-pub-field="url" data-pub-idx="${i}" placeholder="https://...">
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-remove-pub]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      d.publications.splice(parseInt(btn.dataset.removePub), 1);
+      renderPublications();
+      saveLocal();
+      renderCV();
+    });
+  });
+  container.querySelectorAll('[data-pub-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.pubIdx);
+      d.publications[idx][input.dataset.pubField] = input.value;
+      saveLocal();
+      scheduleRender();
+    });
+  });
+}
+
+// ---- Volunteer Work ----
+
+function renderVolunteerWork() {
+  const container = document.getElementById('volunteerWorkContainer');
+  if (!container) return;
+  const d = getData();
+  if ((d.volunteerWork || []).length === 0) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No volunteer work yet.</p>';
+    return;
+  }
+  container.innerHTML = d.volunteerWork.map((vol, i) => `
+    <div class="entry-card" data-vol-index="${i}">
+      <div class="entry-header">
+        <h4><i class="fas fa-hand-holding-heart"></i> Volunteer #${i + 1}</h4>
+        <button class="entry-remove" data-remove-vol="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <input type="text" value="${escapeAttr(vol.role)}" data-vol-field="role" data-vol-idx="${i}" placeholder="e.g. Volunteer Coordinator">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Organization</label>
+          <input type="text" value="${escapeAttr(vol.organization)}" data-vol-field="organization" data-vol-idx="${i}" placeholder="e.g. Red Cross">
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" value="${escapeAttr(vol.date)}" data-vol-field="date" data-vol-idx="${i}" placeholder="e.g. 2023 - Present">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea rows="2" data-vol-field="description" data-vol-idx="${i}" placeholder="Describe your contributions...">${escapeAttr(vol.description)}</textarea>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-remove-vol]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      d.volunteerWork.splice(parseInt(btn.dataset.removeVol), 1);
+      renderVolunteerWork();
+      saveLocal();
+      renderCV();
+    });
+  });
+  container.querySelectorAll('[data-vol-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.volIdx);
+      d.volunteerWork[idx][input.dataset.volField] = input.value;
       saveLocal();
       scheduleRender();
     });
@@ -803,8 +920,10 @@ Object.assign(window, {
   switchTab, setTheme, setTemplate, setClTemplate,
   addSkill, addEducation: () => { getData().education.push({ institution: '', degree: '', year: '' }); renderEducation(); saveLocal(); renderCV(); },
   addExperience: () => { getData().experience.push({ company: '', title: '', startDate: '', endDate: '', responsibilities: '' }); renderExperience(); saveLocal(); renderCV(); },
-  addProject: () => { getData().projects.push({ name: '', description: '', technologies: '' }); renderProjects(); saveLocal(); renderCV(); },
-  addReference: () => { getData().references.push({ name: '', position: '', contact: '' }); renderReferences(); saveLocal(); renderCV(); },
+  addCertification: () => { if (!getData().certifications) getData().certifications = []; getData().certifications.push({ name: '', issuer: '', date: '' }); renderCertifications(); saveLocal(); renderCV(); },
+  addLanguage: () => { if (!getData().languages) getData().languages = []; getData().languages.push({ name: '', level: '' }); renderLanguages(); saveLocal(); renderCV(); },
+  addPublication: () => { if (!getData().publications) getData().publications = []; getData().publications.push({ title: '', publisher: '', date: '', url: '' }); renderPublications(); saveLocal(); renderCV(); },
+  addVolunteerWork: () => { if (!getData().volunteerWork) getData().volunteerWork = []; getData().volunteerWork.push({ role: '', organization: '', date: '', description: '' }); renderVolunteerWork(); saveLocal(); renderCV(); },
   addCustomSkill,
   regenerateCoverLetter: renderCoverLetter,
   renderAuthModal,

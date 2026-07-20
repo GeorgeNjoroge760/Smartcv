@@ -34,10 +34,11 @@ export function getDefaultData() {
   return {
     fullName: '', email: '', phone: '', location: '', linkedin: '', portfolio: '',
     professionalTitle: '', careerSummary: '', photo: '',
-    education: [], experience: [], skills: [], projects: [], references: [],
+    education: [], experience: [], skills: [],
+    certifications: [], languages: [], publications: [], volunteerWork: [],
     coverLetter: { company: '', manager: '', position: '', address: '', notes: '' },
     customSkills: [],
-    apiKey: '', template: 'modern', clTemplate: 'modern', theme: 'light',
+    template: 'modern', clTemplate: 'modern', theme: 'light',
   };
 }
 

@@ -12,8 +12,10 @@ describe('Data Store', () => {
     expect(d).toHaveProperty('skills');
     expect(d).toHaveProperty('experience');
     expect(d).toHaveProperty('education');
-    expect(d).toHaveProperty('projects');
-    expect(d).toHaveProperty('references');
+    expect(d).toHaveProperty('certifications');
+    expect(d).toHaveProperty('languages');
+    expect(d).toHaveProperty('publications');
+    expect(d).toHaveProperty('volunteerWork');
     expect(d).toHaveProperty('coverLetter');
     expect(d).toHaveProperty('template', 'modern');
     expect(d).toHaveProperty('clTemplate', 'modern');

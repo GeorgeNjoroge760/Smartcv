@@ -140,10 +140,10 @@
           </div>
         </div>
         <div class="stat-card glass" id="statProjects">
-          <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+          <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
           <div class="stat-info">
             <span class="stat-value" id="projectCount">0</span>
-            <span class="stat-label">Projects</span>
+            <span class="stat-label">Education</span>
           </div>
         </div>
       </div>
@@ -207,8 +207,7 @@
             <button class="form-nav-btn" data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
             <button class="form-nav-btn" data-section="experience"><i class="fas fa-history"></i> Experience</button>
             <button class="form-nav-btn" data-section="skills"><i class="fas fa-code"></i> Skills</button>
-            <button class="form-nav-btn" data-section="projects"><i class="fas fa-folder"></i> Projects</button>
-            <button class="form-nav-btn" data-section="references"><i class="fas fa-users"></i> References</button>
+            <button class="form-nav-btn" data-section="additional"><i class="fas fa-plus-circle"></i> Additional</button>
           </div>
 
           <div class="form-sections">
@@ -305,22 +304,31 @@
               <div class="skills-tags" id="skillsContainer"></div>
             </div>
 
-            <!-- PROJECTS -->
-            <div class="form-section" id="section-projects">
+            <!-- ADDITIONAL SECTIONS -->
+            <div class="form-section" id="section-additional">
               <div class="section-header">
-                <h3>Projects</h3>
-                <button class="btn btn-sm btn-primary" onclick="addProject()"><i class="fas fa-plus"></i> Add</button>
+                <h3>Certifications</h3>
+                <button class="btn btn-sm btn-primary" onclick="addCertification()"><i class="fas fa-plus"></i> Add</button>
               </div>
-              <div id="projectsContainer"></div>
-            </div>
+              <div id="certificationsContainer"></div>
 
-            <!-- REFERENCES -->
-            <div class="form-section" id="section-references">
-              <div class="section-header">
-                <h3>References</h3>
-                <button class="btn btn-sm btn-primary" onclick="addReference()"><i class="fas fa-plus"></i> Add</button>
+              <div class="section-header" style="margin-top:20px">
+                <h3>Languages</h3>
+                <button class="btn btn-sm btn-primary" onclick="addLanguage()"><i class="fas fa-plus"></i> Add</button>
               </div>
-              <div id="referencesContainer"></div>
+              <div id="languagesContainer"></div>
+
+              <div class="section-header" style="margin-top:20px">
+                <h3>Publications</h3>
+                <button class="btn btn-sm btn-primary" onclick="addPublication()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="publicationsContainer"></div>
+
+              <div class="section-header" style="margin-top:20px">
+                <h3>Volunteer Work</h3>
+                <button class="btn btn-sm btn-primary" onclick="addVolunteerWork()"><i class="fas fa-plus"></i> Add</button>
+              </div>
+              <div id="volunteerWorkContainer"></div>
             </div>
           </div>
         </div>
