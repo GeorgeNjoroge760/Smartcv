@@ -1,4 +1,4 @@
-import { api, setToken } from './api.js';
+import { api, setToken, isBackendAvailable, checkBackend } from './api.js';
 
 let currentUser = null;
 let currentProfile = null;
@@ -9,8 +9,11 @@ export function isLoggedIn() { return !!currentUser; }
 export function isPro() { return currentProfile?.tier === 'pro'; }
 
 export async function initAuth() {
+  const backendUp = await checkBackend();
+  if (!backendUp) return false;
+
   const token = getToken();
-  if (!token) return;
+  if (!token) return true;
 
   try {
     const { user, profile } = await api.get('/auth/me');
@@ -19,6 +22,7 @@ export async function initAuth() {
   } catch {
     setToken(null);
   }
+  return true;
 }
 
 function getToken() {
@@ -88,9 +92,30 @@ export function renderAuthModal() {
   const existing = document.getElementById('authModal');
   if (existing) existing.remove();
 
+  const backendUp = isBackendAvailable();
+
   const modal = document.createElement('div');
   modal.id = 'authModal';
   modal.className = 'modal-overlay';
+
+  if (backendUp === false) {
+    // Backend not available — show offline notice
+    modal.innerHTML = `
+      <div class="modal glass">
+        <button class="modal-close" onclick="document.getElementById('authModal').remove()">&times;</button>
+        <div class="upgrade-content">
+          <div class="upgrade-icon" style="background:var(--accent-gradient)"><i class="fas fa-cloud"></i></div>
+          <h3>Server Offline</h3>
+          <p>Account features require the backend server. Your CV data is saved locally in your browser and works offline.</p>
+          <p style="margin-top:12px;font-size:0.85rem;color:var(--text-muted)">To enable accounts, cloud save, and payments, deploy the backend server.</p>
+          <button class="btn btn-primary btn-block" onclick="document.getElementById('authModal').remove()" style="margin-top:16px">Got it</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    return;
+  }
+
   modal.innerHTML = `
     <div class="modal glass">
       <button class="modal-close" onclick="document.getElementById('authModal').remove()">&times;</button>
@@ -114,8 +139,7 @@ export function renderAuthModal() {
           <a href="#" id="authSwitchLink">Sign Up</a>
         </p>
       </form>
-    </div>
-  `;
+    </div>`;
 
   document.body.appendChild(modal);
 
@@ -168,7 +192,11 @@ export function renderAuthModal() {
       updateAuthUI();
       if (typeof window.onAuthChange === 'function') window.onAuthChange();
     } catch (err) {
-      errorEl.textContent = err.message;
+      if (err.offline) {
+        errorEl.textContent = 'Server is offline. Please try again later.';
+      } else {
+        errorEl.textContent = err.message;
+      }
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Create Account';

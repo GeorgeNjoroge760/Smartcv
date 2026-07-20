@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>API Not Available</title></head>
+<body>
+<script>
+window.parent.postMessage({ type: 'api-not-found' }, '*');
+document.write(JSON.stringify({ error: 'Backend API is not available on this deployment. Auth, payments, and AI features require a separate backend server.' }));
+</script>
+</body>
+</html>

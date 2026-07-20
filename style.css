@@ -1800,6 +1800,16 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   .cl-template-minimal {
     padding: 14px 12px;
   }
+
+  .share-grid {
+    grid-template-columns: 1fr;
+  }
+  .share-card {
+    padding: 20px;
+  }
+  .share-link-row {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 768px) {

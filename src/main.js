@@ -1,4 +1,5 @@
 import { getData, setData, getDefaultData, saveToLocal, loadFromLocal, undo, redo } from './store.js';
+import { api, isBackendAvailable } from './api.js';
 import { initAuth, isLoggedIn, isPro, updateAuthUI, renderAuthModal, saveCvData, subscribeEmail } from './auth.js';
 import { renderCV } from './cv.js';
 import { renderCoverLetter } from './coverLetter.js';
@@ -21,7 +22,7 @@ async function init() {
   loadFromLocal();
 
   // Try to load from server if logged in
-  await initAuth();
+  const backendUp = await initAuth();
   updateAuthUI();
 
   bindFormFields();
