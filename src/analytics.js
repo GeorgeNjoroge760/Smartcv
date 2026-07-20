@@ -1,5 +1,3 @@
-import { trackEvent } from './analytics.js';
-
 let _analytics = null;
 
 export function initAnalytics() {
