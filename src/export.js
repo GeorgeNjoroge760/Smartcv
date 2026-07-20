@@ -1,7 +1,5 @@
 import { getData } from './store.js';
-import { isPro } from './auth.js';
 import { trackExport } from './analytics.js';
-import { trackUpgrade } from './analytics.js';
 
 function getPdfOpt(filename) {
   return {
@@ -13,44 +11,22 @@ function getPdfOpt(filename) {
   };
 }
 
-function addWatermark(el) {
-  if (isPro()) return;
-  const wm = document.createElement('div');
-  wm.className = 'cv-watermark';
-  wm.innerHTML = 'Built with SmartCV AI — smartcv-generator.vercel.app';
-  wm.style.cssText = 'text-align:center;padding:8px;font-size:0.65rem;color:#aaa;border-top:1px solid #eee;margin-top:16px;font-style:italic;';
-  el.appendChild(wm);
-}
-
-function removeWatermark() {
-  const wm = document.querySelector('.cv-watermark');
-  if (wm) wm.remove();
-}
-
 export function downloadCVPdf() {
   const el = document.querySelector('#cvPreview .cv-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  addWatermark(el);
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cv_pdf');
-  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el).then(() => {
-    removeWatermark();
-    if (!isPro()) trackUpgrade('cv_export');
-  });
+  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el);
 }
 
 export function downloadCoverLetterPDF() {
   const el = document.querySelector('#clPreview .cl-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
-  addWatermark(el);
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cl_pdf');
-  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el).then(() => {
-    removeWatermark();
-    if (!isPro()) trackUpgrade('cl_export');
-  });
+  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el);
 }
 
 export function printCV() {

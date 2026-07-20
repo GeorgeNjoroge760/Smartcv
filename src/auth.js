@@ -1,89 +1,66 @@
-import { api, setToken, isBackendAvailable, checkBackend } from './api.js';
+import { trackEvent } from './analytics.js';
+
+const USERS_KEY = 'smartcv_users';
+const SESSION_KEY = 'smartcv_session';
 
 let currentUser = null;
-let currentProfile = null;
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(password);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 export function getUser() { return currentUser; }
-export function getProfile() { return currentProfile; }
 export function isLoggedIn() { return !!currentUser; }
-export function isPro() { return currentProfile?.tier === 'pro'; }
 
 export async function initAuth() {
-  const backendUp = await checkBackend();
-  if (!backendUp) return false;
-
-  const token = getToken();
-  if (!token) return true;
-
   try {
-    const { user, profile } = await api.get('/auth/me');
-    currentUser = user;
-    currentProfile = profile;
-  } catch {
-    setToken(null);
-  }
-  return true;
-}
-
-function getToken() {
-  return localStorage.getItem('smartcv_token');
-}
-
-export async function signUp(email, password) {
-  const { user, session, message } = await api.post('/auth/signup', { email, password });
-  if (session?.access_token) {
-    setToken(session.access_token);
-    currentUser = user;
-    await loadProfile();
-  }
-  return { user, message };
-}
-
-export async function signIn(email, password) {
-  const { user, session } = await api.post('/auth/signin', { email, password });
-  setToken(session.access_token);
-  currentUser = user;
-  await loadProfile();
-  return user;
-}
-
-export async function signOut() {
-  try { await api.post('/auth/signout'); } catch {}
-  setToken(null);
-  currentUser = null;
-  currentProfile = null;
-}
-
-async function loadProfile() {
-  try {
-    const data = await api.get('/user/profile');
-    currentProfile = data;
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if (session?.email) {
+      currentUser = session;
+    }
   } catch {}
 }
 
-export async function getSubscriptionStatus() {
-  return api.get('/payments/status');
-}
-
-export async function createCheckoutSession(priceId) {
-  return api.post('/payments/create-checkout', { priceId });
-}
-
-export async function openBillingPortal() {
-  return api.post('/payments/portal');
-}
-
-export async function saveCvData(cvData) {
-  if (!isLoggedIn()) return;
-  try {
-    await api.put('/user/cv-data', { data: cvData });
-  } catch (e) {
-    console.warn('Cloud save failed:', e.message);
+export async function signUp(email, password) {
+  const users = getUsers();
+  if (users.find(u => u.email === email)) {
+    throw new Error('An account with this email already exists');
   }
+  const hash = await hashPassword(password);
+  const user = { id: crypto.randomUUID(), email, passwordHash: hash };
+  users.push(user);
+  saveUsers(users);
+  currentUser = { id: user.id, email: user.email };
+  localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+  trackEvent('signup', { method: 'email' });
+  return currentUser;
 }
 
-export async function subscribeEmail(email, source = 'web') {
-  return api.post('/user/subscribe', { email, source });
+export async function signIn(email, password) {
+  const users = getUsers();
+  const hash = await hashPassword(password);
+  const user = users.find(u => u.email === email && u.passwordHash === hash);
+  if (!user) throw new Error('Invalid email or password');
+  currentUser = { id: user.id, email: user.email };
+  localStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+  trackEvent('signin', { method: 'email' });
+  return currentUser;
+}
+
+export function signOut() {
+  currentUser = null;
+  localStorage.removeItem(SESSION_KEY);
 }
 
 // ---- Auth Modal UI ----
@@ -92,33 +69,12 @@ export function renderAuthModal() {
   const existing = document.getElementById('authModal');
   if (existing) existing.remove();
 
-  const backendUp = isBackendAvailable();
-
   const modal = document.createElement('div');
   modal.id = 'authModal';
   modal.className = 'modal-overlay';
-
-  if (backendUp === false) {
-    // Backend not available — show offline notice
-    modal.innerHTML = `
-      <div class="modal glass">
-        <button class="modal-close" onclick="document.getElementById('authModal').remove()">&times;</button>
-        <div class="upgrade-content">
-          <div class="upgrade-icon" style="background:var(--accent-gradient)"><i class="fas fa-cloud"></i></div>
-          <h3>Server Offline</h3>
-          <p>Account features require the backend server. Your CV data is saved locally in your browser and works offline.</p>
-          <p style="margin-top:12px;font-size:0.85rem;color:var(--text-muted)">To enable accounts, cloud save, and payments, deploy the backend server.</p>
-          <button class="btn btn-primary btn-block" onclick="document.getElementById('authModal').remove()" style="margin-top:16px">Got it</button>
-        </div>
-      </div>`;
-    document.body.appendChild(modal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
-    return;
-  }
-
   modal.innerHTML = `
     <div class="modal glass">
-      <button class="modal-close" onclick="document.getElementById('authModal').remove()">&times;</button>
+      <button class="modal-close" id="authModalClose">&times;</button>
       <div class="modal-tabs">
         <button class="modal-tab active" data-auth-tab="signin">Sign In</button>
         <button class="modal-tab" data-auth-tab="signup">Sign Up</button>
@@ -139,7 +95,8 @@ export function renderAuthModal() {
           <a href="#" id="authSwitchLink">Sign Up</a>
         </p>
       </form>
-    </div>`;
+    </div>
+  `;
 
   document.body.appendChild(modal);
 
@@ -150,6 +107,8 @@ export function renderAuthModal() {
   const switchLink = document.getElementById('authSwitchLink');
   const form = document.getElementById('authForm');
   const errorEl = document.getElementById('authError');
+
+  document.getElementById('authModalClose').addEventListener('click', () => modal.remove());
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -183,8 +142,7 @@ export function renderAuthModal() {
 
     try {
       if (mode === 'signup') {
-        const result = await signUp(email, password);
-        if (!result.user?.id) throw new Error('Signup failed');
+        await signUp(email, password);
       } else {
         await signIn(email, password);
       }
@@ -192,11 +150,7 @@ export function renderAuthModal() {
       updateAuthUI();
       if (typeof window.onAuthChange === 'function') window.onAuthChange();
     } catch (err) {
-      if (err.offline) {
-        errorEl.textContent = 'Server is offline. Please try again later.';
-      } else {
-        errorEl.textContent = err.message;
-      }
+      errorEl.textContent = err.message;
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = mode === 'signin' ? 'Sign In' : 'Create Account';
@@ -210,22 +164,17 @@ export function renderAuthModal() {
 
 export function updateAuthUI() {
   const authBtn = document.getElementById('authBtn');
-  const proBadge = document.getElementById('proBadge');
   if (!authBtn) return;
 
   if (isLoggedIn()) {
     authBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i><span>Sign Out</span>`;
-    authBtn.onclick = async () => {
-      await signOut();
+    authBtn.onclick = () => {
+      signOut();
       updateAuthUI();
       if (typeof window.onAuthChange === 'function') window.onAuthChange();
     };
   } else {
     authBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i><span>Sign In</span>`;
     authBtn.onclick = () => renderAuthModal();
-  }
-
-  if (proBadge) {
-    proBadge.style.display = isPro() ? 'inline-flex' : 'none';
   }
 }

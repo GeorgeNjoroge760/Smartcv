@@ -1,10 +1,9 @@
 import { getData, setData, getDefaultData, saveToLocal, loadFromLocal, undo, redo } from './store.js';
-import { api, isBackendAvailable } from './api.js';
-import { initAuth, isLoggedIn, isPro, updateAuthUI, renderAuthModal, saveCvData, subscribeEmail } from './auth.js';
+import { initAuth, updateAuthUI, renderAuthModal } from './auth.js';
 import { renderCV } from './cv.js';
 import { renderCoverLetter } from './coverLetter.js';
 import { downloadCVPdf, downloadCoverLetterPDF, printCV, printCoverLetter, downloadCVDocx, downloadCoverLetterDocx, exportJSON, importJSON } from './export.js';
-import { generateAICV, generateAICoverLetter, analyzeJobMatch } from './ai.js';
+import { analyzeJobMatch } from './ai.js';
 import { initAnalytics, trackEvent, trackFeatureUse } from './analytics.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -15,15 +14,11 @@ let currentFormSection = 'personal';
 
 // ---- Initialization ----
 
-async function init() {
+function init() {
   initAnalytics();
-
-  // Load local data as fallback
   loadFromLocal();
 
-  // Try to load from server if logged in
-  const backendUp = await initAuth();
-  updateAuthUI();
+  initAuth().then(() => updateAuthUI());
 
   bindFormFields();
   setupPhotoUpload();
@@ -36,18 +31,11 @@ async function init() {
   setupProfileSelector();
   renderProfileList();
 
-  // Template/theme button states
   $$('.template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === getData().template));
   $$('.cl-template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === getData().clTemplate));
   $$('.theme-option').forEach(el => el.classList.toggle('active', el.dataset.theme === getData().theme));
 
-  // Auth change callback
-  window.onAuthChange = () => {
-    renderAll();
-    updateUsageBanner();
-  };
-
-  console.log('SmartCV AI v2.0 initialized');
+  console.log('SmartCV AI initialized');
 }
 
 function renderAll() {
@@ -62,7 +50,6 @@ function renderAll() {
   renderCustomSkills();
   renderProfileList();
   updateProfileSelector();
-  updateUsageBanner();
 }
 
 // ---- Tab Navigation ----
@@ -97,7 +84,6 @@ function setupNavListeners() {
     });
   });
 
-  // Form section nav
   $$('.form-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentFormSection = btn.dataset.section;
@@ -123,7 +109,6 @@ function bindFormFields() {
     });
   });
 
-  // Cover letter fields
   ['clCompany', 'clManager', 'clPosition', 'clAddress', 'clNotes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -137,7 +122,6 @@ function bindFormFields() {
     }
   });
 
-  // Summary char count
   const summary = document.getElementById('careerSummary');
   if (summary) {
     summary.addEventListener('input', () => {
@@ -160,7 +144,6 @@ function scheduleRender() {
 function saveLocal() {
   saveToLocal();
   showSaveIndicator();
-  saveCvData(getData());
 }
 
 function restoreFormFields() {
@@ -297,7 +280,7 @@ function renderSkills() {
   if (!container) return;
   const d = getData();
   container.innerHTML = d.skills.map((skill, i) =>
-    `<span class="skill-tag">${skill} <i class="fas fa-times" data-remove-skill="${i}"></i></span>`
+    `<span class="skill-tag">${escapeAttr(skill)} <i class="fas fa-times" data-remove-skill="${i}"></i></span>`
   ).join('');
 
   container.querySelectorAll('[data-remove-skill]').forEach(btn => {
@@ -323,7 +306,7 @@ function addSkill() {
   saveLocal();
 }
 
-// ---- Education (Event delegation, no inline handlers) ----
+// ---- Education ----
 
 function renderEducation() {
   const container = document.getElementById('educationContainer');
@@ -547,8 +530,8 @@ function renderCustomSkills() {
   container.innerHTML = skills.map((s, i) =>
     `<div class="entry-card" style="padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:12px">
       <div style="flex:1">
-        <strong style="font-size:0.85rem">${s.name}</strong>
-        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px">${s.keywords.join(', ')}</span>
+        <strong style="font-size:0.85rem">${escapeAttr(s.name)}</strong>
+        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:8px">${escapeAttr(s.keywords.join(', '))}</span>
       </div>
       <button class="btn btn-sm btn-danger" data-remove-cskill="${i}" style="padding:4px 8px;font-size:0.7rem"><i class="fas fa-times"></i></button>
     </div>`
@@ -707,7 +690,7 @@ function renderProfileList() {
   container.innerHTML = Object.entries(profiles.items).map(([id, p]) => `
     <div class="profile-item ${id === currentProfileId ? 'active' : ''}">
       <div class="profile-info">
-        <input class="profile-name-input" value="${p.name}"
+        <input class="profile-name-input" value="${escapeAttr(p.name)}"
           data-rename-profile="${id}"
           ${id === 'default' ? 'readonly' : ''}
           title="Click to rename">
@@ -771,52 +754,6 @@ function deleteProfile(id) {
   renderProfileList();
 }
 
-// ---- Usage Banner ----
-
-function updateUsageBanner() {
-  const banner = document.getElementById('usageBanner');
-  if (!banner) return;
-  banner.style.display = 'none';
-}
-
-// ---- Upgrade Modal (exposed globally) ----
-
-function openUpgradeModal() {
-  const modal = document.createElement('div');
-  modal.className = 'modal-overlay';
-  modal.id = 'upgradeModal';
-  modal.innerHTML = `
-    <div class="modal glass">
-      <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">&times;</button>
-      <div class="upgrade-content">
-        <div class="upgrade-icon"><i class="fas fa-crown"></i></div>
-        <h3>Upgrade to Pro</h3>
-        <p>Unlock unlimited AI features, all templates, and more.</p>
-        <ul class="upgrade-features">
-          <li><i class="fas fa-check"></i> Unlimited AI generations</li>
-          <li><i class="fas fa-check"></i> All premium templates</li>
-          <li><i class="fas fa-check"></i> No watermarks on exports</li>
-          <li><i class="fas fa-check"></i> Cloud save & sync</li>
-          <li><i class="fas fa-check"></i> Priority support</li>
-        </ul>
-        <div class="upgrade-pricing">
-          <div class="price-card"><span class="price-label">Monthly</span><span class="price-amount">$5</span><span class="price-period">/month</span></div>
-          <div class="price-card popular"><span class="price-popular-badge">Save 33%</span><span class="price-label">Yearly</span><span class="price-amount">$40</span><span class="price-period">/year</span></div>
-        </div>
-        <button class="btn btn-primary btn-block" id="upgradeBtn">Upgrade Now</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
-  document.getElementById('upgradeBtn')?.addEventListener('click', async () => {
-    try {
-      const result = await api.post('/payments/create-checkout', {});
-      if (result.url) window.location.href = result.url;
-    } catch (err) { alert('Payment setup failed: ' + err.message); }
-  });
-}
-
 // ---- Keyboard Shortcuts ----
 
 function setupKeyboardShortcuts() {
@@ -855,14 +792,12 @@ function setupMobileNav() {
   });
 }
 
-// ---- Escape attribute values (XSS fix) ----
-
 function escapeAttr(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ---- Expose to window for inline onclick in HTML (transitional) ----
+// ---- Expose to window ----
 
 Object.assign(window, {
   switchTab, setTheme, setTemplate, setClTemplate,
@@ -872,14 +807,12 @@ Object.assign(window, {
   addReference: () => { getData().references.push({ name: '', position: '', contact: '' }); renderReferences(); saveLocal(); renderCV(); },
   addCustomSkill,
   regenerateCoverLetter: renderCoverLetter,
+  renderAuthModal,
   downloadCVPdf, downloadCoverLetterPDF, printCV, printCoverLetter,
   downloadCVDocx, downloadCoverLetterDocx,
   exportJSON, importJSON: (e) => importJSON(e, (imported) => { const d = getData(); Object.assign(d, imported); if (imported.coverLetter) d.coverLetter = { ...d.coverLetter, ...imported.coverLetter }; saveLocal(); restoreFormFields(); renderAll(); }),
-  generateAICV, generateAICoverLetter, analyzeJobMatch,
+  analyzeJobMatch,
   createProfile: () => createProfile(document.getElementById('newProfileName')?.value),
-  openUpgradeModal,
-  renderAuthModal,
-  subscribeEmail,
   clearAllData: () => {
     if (!confirm('Are you sure? This cannot be undone.')) return;
     Object.assign(getData(), getDefaultData());
@@ -915,28 +848,4 @@ Object.assign(window, {
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
-
-  // Email capture
-  document.getElementById('emailCaptureForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('emailCaptureInput')?.value;
-    if (!email) return;
-    try {
-      await subscribeEmail(email, 'dashboard');
-      document.getElementById('emailCapture').style.display = 'none';
-      alert('Thanks for subscribing!');
-    } catch (err) {
-      alert(err.message || 'Subscription failed');
-    }
-  });
-
-  document.getElementById('emailCaptureDismiss')?.addEventListener('click', () => {
-    document.getElementById('emailCapture').style.display = 'none';
-    localStorage.setItem('smartcv_email_dismissed', '1');
-  });
-
-  // Hide email capture if dismissed
-  if (localStorage.getItem('smartcv_email_dismissed')) {
-    document.getElementById('emailCapture').style.display = 'none';
-  }
 });
