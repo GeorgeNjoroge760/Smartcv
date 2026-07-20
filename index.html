@@ -93,7 +93,6 @@
         <select id="profileSelect" class="profile-select" title="Switch Profile"></select>
       </div>
       <div class="topbar-actions">
-        <span class="pro-badge" id="proBadge" style="display:none"><i class="fas fa-crown"></i> PRO</span>
         <div class="save-indicator" id="saveIndicator"></div>
         <button class="btn btn-sm btn-primary" onclick="switchTab('share')" title="Share SmartCV AI">
           <i class="fas fa-share-alt"></i> Share
@@ -110,8 +109,6 @@
         </button>
       </div>
     </header>
-
-    <div class="usage-banner" id="usageBanner" style="display:none"></div>
 
     <!-- ====== DASHBOARD TAB ====== -->
     <section class="tab-content active" id="tab-dashboard">
@@ -197,22 +194,6 @@
       </div>
 
       <div class="dashboard-tips" id="dashboardTips"></div>
-
-      <!-- Email Capture -->
-      <div class="email-capture glass" id="emailCapture">
-        <div class="email-capture-content">
-          <i class="fas fa-envelope-open-text"></i>
-          <div>
-            <h4>Get CV tips & early access to Pro features</h4>
-            <p>No spam. Unsubscribe anytime.</p>
-          </div>
-        </div>
-        <form class="email-capture-form" id="emailCaptureForm">
-          <input type="email" id="emailCaptureInput" placeholder="Enter your email" required>
-          <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
-          <button type="button" class="btn btn-sm btn-outline" id="emailCaptureDismiss">Dismiss</button>
-        </form>
-      </div>
     </section>
 
     <!-- ====== CV BUILDER TAB ====== -->
@@ -463,19 +444,6 @@
           </div>
         </div>
         <div class="settings-card glass">
-          <h3><i class="fas fa-robot"></i> AI Integration</h3>
-          <p class="text-muted">AI-powered features will use your form data to generate optimized content. Configure your API key below (optional). Your key is stored only for this session and never saved to disk.</p>
-          <div class="form-group">
-            <label>OpenAI API Key</label>
-            <input type="password" id="apiKey" placeholder="sk-..." data-field="apiKey">
-          </div>
-          <div class="settings-actions">
-            <button class="btn btn-primary" onclick="generateAICV()"><i class="fas fa-magic"></i> Enhance CV with AI</button>
-            <button class="btn btn-secondary" onclick="generateAICoverLetter()"><i class="fas fa-magic"></i> Generate Cover Letter with AI</button>
-          </div>
-        </div>
-
-        <div class="settings-card glass">
           <h3><i class="fas fa-chart-line"></i> Job Match Keywords</h3>
           <p class="text-muted">Add custom skill keywords for the Job Match analysis. Each entry maps a skill name to comma-separated keywords found in job descriptions.</p>
           <div id="customSkillsContainer" class="custom-skills-list"></div>
@@ -563,7 +531,7 @@
           <h3><i class="fas fa-code"></i> Embed Badge</h3>
           <p class="text-muted">Add a SmartCV AI badge to your portfolio or website.</p>
           <div class="share-link-row">
-            <input type="text" id="shareEmbedInput" value='&lt;a href="https://smartcv-generator.vercel.app" target="_blank" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border-radius:8px;font-family:sans-serif;font-weight:600;text-decoration:none"&gt;⚡ Built with SmartCV AI&lt;/a&gt;' readonly>
+            <input type="text" id="shareEmbedInput" value='&lt;a href="https://smartcv-generator.vercel.app" target="_blank" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border-radius:8px;font-family:sans-serif;font-weight:600;text-decoration:none"&gt;Built with SmartCV AI&lt;/a&gt;' readonly>
             <button class="btn btn-primary" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Copy</button>
           </div>
           <div class="share-copied-msg" id="embedCopiedMsg"><i class="fas fa-check-circle"></i> Embed code copied!</div>
