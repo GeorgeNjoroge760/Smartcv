@@ -2,16 +2,6 @@ import html2pdf from 'html2pdf.js';
 import { getData } from './store.js';
 import { trackExport } from './analytics.js';
 
-function getPdfOpt(filename) {
-  return {
-    margin: [0.5, 0.5, 0.5, 0.5],
-    filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-  };
-}
-
 function ensureVisible(el) {
   const tab = el.closest('.tab-content');
   if (tab && !tab.classList.contains('active')) {
@@ -19,15 +9,34 @@ function ensureVisible(el) {
     tab.style.display = 'block';
     tab.style.position = 'absolute';
     tab.style.left = '-9999px';
-    tab.style.width = '800px';
+    tab.style.top = '0';
+    tab.style.width = '700px';
     return () => {
       tab.style.display = wasHidden || '';
       tab.style.position = '';
       tab.style.left = '';
+      tab.style.top = '';
       tab.style.width = '';
     };
   }
   return null;
+}
+
+function getPdfOptions(filename) {
+  return {
+    margin: [0.4, 0.4, 0.4, 0.4],
+    filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      letterRendering: true,
+      useCORS: true,
+      logging: false,
+      width: 700,
+      windowWidth: 700,
+    },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+  };
 }
 
 export function downloadCVPdf() {
@@ -37,7 +46,7 @@ export function downloadCVPdf() {
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cv_pdf');
   const restore = ensureVisible(el);
-  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el).save()
+  html2pdf().set(getPdfOptions(`${name}_CV.pdf`)).from(el).save()
     .catch(() => alert('Failed to generate PDF. Please try again.'))
     .finally(() => { if (restore) restore(); });
 }
@@ -49,7 +58,7 @@ export function downloadCoverLetterPDF() {
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cl_pdf');
   const restore = ensureVisible(el);
-  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el).save()
+  html2pdf().set(getPdfOptions(`${name}_Cover_Letter.pdf`)).from(el).save()
     .catch(() => alert('Failed to generate PDF. Please try again.'))
     .finally(() => { if (restore) restore(); });
 }
@@ -60,7 +69,7 @@ export function printCV() {
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cv_print');
   const restore = ensureVisible(el);
-  html2pdf().set(getPdfOpt(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+  html2pdf().set(getPdfOptions(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
   }).catch(() => alert('Failed to generate PDF. Please try again.'))
     .finally(() => { if (restore) restore(); });
@@ -72,7 +81,7 @@ export function printCoverLetter() {
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cl_print');
   const restore = ensureVisible(el);
-  html2pdf().set(getPdfOpt(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
+  html2pdf().set(getPdfOptions(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
   }).catch(() => alert('Failed to generate PDF. Please try again.'))
     .finally(() => { if (restore) restore(); });

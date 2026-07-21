@@ -700,6 +700,9 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 .builder-preview {
   min-height: 500px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .form-nav {
@@ -1038,6 +1041,10 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   font-family: var(--font-primary);
   color: #333;
   line-height: 1.5;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Template: Modern */
