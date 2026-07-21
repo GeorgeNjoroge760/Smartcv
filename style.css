@@ -2103,9 +2103,11 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     position: static;
     max-height: none;
     overflow-y: visible;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
   .builder-preview {
-    min-height: auto;
+    min-height: 300px;
+    border-radius: 0;
   }
   .form-nav {
     overflow-x: auto;
@@ -2130,17 +2132,43 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     grid-template-columns: 1fr;
     gap: 8px;
   }
+  .skill-input-group .form-row {
+    grid-template-columns: 1fr auto;
+  }
+  .skill-input-group .form-row .btn {
+    align-self: end;
+  }
   .form-group input,
   .form-group textarea {
     padding: 10px 12px;
-    font-size: 16px; /* prevents iOS zoom */
+    font-size: 16px;
+  }
+  .form-section h3 {
+    font-size: 1rem;
+  }
+  .section-header {
+    margin-bottom: 12px;
+  }
+  .entry-card {
+    padding: 14px;
+  }
+  .entry-card .form-group {
+    margin-bottom: 8px;
+  }
+  .photo-upload {
+    padding: 12px;
+    gap: 12px;
+  }
+  .photo-placeholder i {
+    font-size: 1.5rem;
   }
 
+  /* Preview */
   .preview-toolbar {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 12px;
   }
   .template-selector {
     flex-wrap: wrap;
@@ -2153,7 +2181,9 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     gap: 4px;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
+    scrollbar-width: none;
   }
+  .template-buttons::-webkit-scrollbar { display: none; }
   .template-btn, .cl-template-btn {
     padding: 6px 12px;
     font-size: 0.72rem;
@@ -2162,10 +2192,15 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
   .preview-actions {
     justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
   }
   .preview-actions .btn {
     font-size: 0.72rem;
     padding: 6px 10px;
+  }
+  .zoom-controls {
+    padding: 2px;
   }
 
   /* CV Preview */
@@ -2180,97 +2215,108 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     overflow: hidden;
   }
   .cv-template-modern .cv-header {
-    padding: 20px 16px;
+    padding: 16px 14px;
     flex-direction: column;
     text-align: center;
+    gap: 12px;
   }
   .cv-template-modern .cv-header-info h1 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+  }
+  .cv-template-modern .cv-header-info .cv-contact {
+    font-size: 0.7rem;
+    gap: 8px;
   }
   .cv-template-modern .cv-body {
     grid-template-columns: 1fr;
-    padding: 16px;
+    padding: 14px;
+    gap: 16px;
   }
   .cv-template-modern .cv-sidebar {
     border-right: none;
     padding-right: 0;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 16px;
   }
   .cv-template-modern .cv-header-photo {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
   }
 
   .cv-template-professional .cv-header {
-    padding: 20px 16px 16px;
+    padding: 16px 14px 12px;
   }
   .cv-template-professional .cv-header-info h1 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
   .cv-template-professional .cv-body {
-    padding: 16px;
+    padding: 14px;
   }
 
   .cv-template-minimal .cv-header {
-    padding: 16px;
+    padding: 14px;
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
   .cv-template-minimal .cv-header-info h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   .cv-template-minimal .cv-body {
-    padding: 12px 16px;
+    padding: 10px 14px;
   }
 
   .cv-template-executive .cv-body {
     grid-template-columns: 1fr;
   }
   .cv-template-executive .cv-sidebar {
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
   .cv-template-executive .cv-main {
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
 
   .cv-template-creative .cv-header {
     flex-direction: column;
     text-align: center;
-    padding: 24px 20px;
+    padding: 18px 14px;
   }
   .cv-template-creative .cv-header-info h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
   .cv-template-creative .cv-body {
     grid-template-columns: 1fr;
   }
   .cv-template-creative .cv-main {
-    padding: 20px 16px;
+    padding: 16px 14px;
     border-right: none;
     border-bottom: 1px solid #eee;
   }
   .cv-template-creative .cv-sidebar {
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
 
   .cv-template-technical .cv-header {
     flex-direction: column;
     text-align: center;
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
   .cv-template-technical .cv-header-right {
     flex-direction: column;
     text-align: center;
   }
   .cv-template-technical .cv-body {
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
 
+  .cv-section h2 {
+    font-size: 0.82rem;
+  }
   .cv-skills-list {
     gap: 6px;
   }
   .cv-skill-item {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     padding: 4px 10px;
   }
 
@@ -2442,27 +2488,57 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
   .form-nav-btn {
     font-size: 0.68rem;
-    padding: 4px 8px;
+    padding: 6px 10px;
+    min-height: 32px;
   }
 
   .entry-card {
-    padding: 12px;
+    padding: 10px;
   }
   .entry-header h4 {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
+  }
+
+  .preview-actions .btn {
+    font-size: 0.68rem;
+    padding: 5px 8px;
   }
 
   .cv-template-modern .cv-header {
-    padding: 16px 12px;
+    padding: 12px 10px;
   }
   .cv-template-modern .cv-body {
-    padding: 12px;
+    padding: 10px;
+    gap: 12px;
+  }
+  .cv-template-modern .cv-header-info h1 {
+    font-size: 1.1rem;
+  }
+  .cv-template-professional .cv-header {
+    padding: 12px 10px;
   }
   .cv-template-professional .cv-body {
-    padding: 12px;
+    padding: 10px;
   }
   .cv-template-minimal .cv-body {
-    padding: 8px 12px;
+    padding: 8px 10px;
+  }
+  .cv-template-executive .cv-sidebar,
+  .cv-template-executive .cv-main {
+    padding: 12px 10px;
+  }
+  .cv-template-creative .cv-header {
+    padding: 14px 10px;
+  }
+  .cv-template-creative .cv-main,
+  .cv-template-creative .cv-sidebar {
+    padding: 12px 10px;
+  }
+  .cv-template-technical .cv-header {
+    padding: 12px 10px;
+  }
+  .cv-template-technical .cv-body {
+    padding: 12px 10px;
   }
 
   .cl-template-modern {
