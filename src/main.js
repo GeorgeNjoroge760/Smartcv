@@ -5,7 +5,7 @@ import { renderCoverLetter } from './coverLetter.js';
 import { downloadCVPdf, downloadCoverLetterPDF, printCV, printCoverLetter, downloadCVDocx, downloadCoverLetterDocx, exportJSON, importJSON } from './export.js';
 import { analyzeJobMatch } from './ai.js';
 import { initAnalytics, trackEvent, trackFeatureUse } from './analytics.js';
-import { setLanguage, getLanguage } from './i18n.js';
+import { setLanguage, getLanguage, translatePage } from './i18n.js';
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -42,6 +42,12 @@ function init() {
   $$('#accentColorOptions .accent-swatch').forEach(btn => {
     btn.addEventListener('click', () => setAccentColor(btn.dataset.color));
   });
+
+  const savedLang = getData().language || 'en';
+  setLanguage(savedLang);
+  const langSelect = $('#languageSelect');
+  if (langSelect) langSelect.value = savedLang;
+  translatePage();
 
   console.log('SmartCV AI initialized');
 }
@@ -1190,7 +1196,7 @@ Object.assign(window, {
   addReferee: () => { if (!getData().referees) getData().referees = []; getData().referees.push({ name: '', title: '', organization: '', email: '', phone: '' }); renderReferees(); saveLocal(); renderCV(); },
   toggleRefereesAvailable,
   saveCVVersion,
-  setLanguage: (lang) => { setLanguage(lang); const d = getData(); d.language = lang; saveLocal(); },
+  setLanguage: (lang) => { setLanguage(lang); const d = getData(); d.language = lang; saveLocal(); translatePage(); },
   addCustomSkill,
   regenerateCoverLetter: renderCoverLetter,
   renderAuthModal,

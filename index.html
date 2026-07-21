@@ -40,34 +40,34 @@
     <nav class="sidebar-nav">
       <a href="#" class="nav-item active" data-tab="dashboard">
         <i class="fas fa-th-large"></i>
-        <span>Dashboard</span>
+        <span data-i18n="dashboard">Dashboard</span>
       </a>
       <a href="#" class="nav-item" data-tab="builder">
         <i class="fas fa-file-alt"></i>
-        <span>CV Builder</span>
+        <span data-i18n="cvBuilder">CV Builder</span>
       </a>
       <a href="#" class="nav-item" data-tab="coverletter">
         <i class="fas fa-envelope"></i>
-        <span>Cover Letter</span>
+        <span data-i18n="coverLetter">Cover Letter</span>
       </a>
       <a href="#" class="nav-item" data-tab="settings">
         <i class="fas fa-cog"></i>
-        <span>Settings</span>
+        <span data-i18n="settings">Settings</span>
       </a>
       <a href="#" class="nav-item" data-tab="jobmatch">
         <i class="fas fa-chart-line"></i>
-        <span>Job Match</span>
+        <span data-i18n="jobMatch">Job Match</span>
       </a>
       <a href="#" class="nav-item" data-tab="share">
         <i class="fas fa-share-alt"></i>
-        <span>Share</span>
+        <span data-i18n="share">Share</span>
       </a>
     </nav>
     <div class="sidebar-footer">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
         <i class="fas fa-moon"></i>
         <i class="fas fa-sun"></i>
-        <span>Dark Mode</span>
+        <span data-i18n="darkMode">Dark Mode</span>
       </button>
     </div>
   </aside>
@@ -79,7 +79,7 @@
   <div class="crop-modal" id="cropModal">
     <div class="crop-modal-content glass">
       <div class="crop-modal-header">
-        <h3><i class="fas fa-crop-alt"></i> Crop Photo</h3>
+        <h3 data-i18n="cropPhoto"><i class="fas fa-crop-alt"></i> Crop Photo</h3>
         <button class="crop-modal-close" id="cropModalClose"><i class="fas fa-times"></i></button>
       </div>
       <div class="crop-canvas-wrapper">
@@ -87,18 +87,18 @@
       </div>
       <div class="crop-controls">
         <div class="crop-ratio-options">
-          <button class="crop-ratio-btn active" data-ratio="free"><i class="fas fa-expand"></i> Free</button>
+          <button class="crop-ratio-btn active" data-ratio="free" data-i18n="free"><i class="fas fa-expand"></i> Free</button>
           <button class="crop-ratio-btn" data-ratio="1:1"><i class="fas fa-square"></i> 1:1</button>
           <button class="crop-ratio-btn" data-ratio="4:3"><i class="fas fa-rectangle-landscape"></i> 4:3</button>
         </div>
         <div class="crop-zoom">
-          <label>Zoom</label>
+          <label data-i18n="zoom">Zoom</label>
           <input type="range" id="cropZoom" min="0.5" max="3" step="0.05" value="1">
         </div>
       </div>
       <div class="crop-modal-actions">
-        <button class="btn btn-outline" id="cropCancel">Cancel</button>
-        <button class="btn btn-primary" id="cropApply"><i class="fas fa-check"></i> Apply</button>
+        <button class="btn btn-outline" id="cropCancel" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" id="cropApply" data-i18n="apply"><i class="fas fa-check"></i> Apply</button>
       </div>
     </div>
   </div>
@@ -143,7 +143,7 @@
           <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
           <div class="stat-info">
             <span class="stat-value" id="completionPercent">0%</span>
-            <span class="stat-label">CV Completion</span>
+            <span class="stat-label" data-i18n="cvCompletion">CV Completion</span>
           </div>
           <div class="stat-progress">
             <div class="progress-bar">
@@ -155,34 +155,34 @@
           <div class="stat-icon"><i class="fas fa-code"></i></div>
           <div class="stat-info">
             <span class="stat-value" id="skillCount">0</span>
-            <span class="stat-label">Skills Added</span>
+            <span class="stat-label" data-i18n="skillsAdded">Skills Added</span>
           </div>
         </div>
         <div class="stat-card glass" id="statExperience">
           <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
           <div class="stat-info">
             <span class="stat-value" id="expCount">0</span>
-            <span class="stat-label">Experiences</span>
+            <span class="stat-label" data-i18n="experiences">Experiences</span>
           </div>
         </div>
         <div class="stat-card glass" id="statProjects">
           <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
           <div class="stat-info">
             <span class="stat-value" id="projectCount">0</span>
-            <span class="stat-label">Education</span>
+            <span class="stat-label" data-i18n="educationCount">Education</span>
           </div>
         </div>
       </div>
 
       <div class="dashboard-welcome glass">
         <div class="welcome-content">
-          <h2>Welcome to SmartCV AI</h2>
-          <p>Fill in your details in the CV Builder to generate professional documents. Your data is saved automatically.</p>
+          <h2 data-i18n="welcome">Welcome to SmartCV AI</h2>
+          <p data-i18n="welcomeDesc">Fill in your details in the CV Builder to generate professional documents. Your data is saved automatically.</p>
           <div class="welcome-actions">
-            <button class="btn btn-primary" onclick="switchTab('builder')">
+            <button class="btn btn-primary" onclick="switchTab('builder')" data-i18n="buildCv">
               <i class="fas fa-file-alt"></i> Build Your CV
             </button>
-            <button class="btn btn-secondary" onclick="switchTab('coverletter')">
+            <button class="btn btn-secondary" onclick="switchTab('coverletter')" data-i18n="generateCoverLetter">
               <i class="fas fa-envelope"></i> Generate Cover Letter
             </button>
           </div>
@@ -195,27 +195,27 @@
       <div class="quick-actions">
         <button class="action-card glass" onclick="downloadCVPdf()">
           <i class="fas fa-file-pdf"></i>
-          <span>Download CV (PDF)</span>
+          <span data-i18n="downloadCvPdf">Download CV (PDF)</span>
         </button>
         <button class="action-card glass" onclick="downloadCVDocx()">
           <i class="fas fa-file-word"></i>
-          <span>Download CV (DOCX)</span>
+          <span data-i18n="downloadCvDocx">Download CV (DOCX)</span>
         </button>
         <button class="action-card glass" onclick="downloadCoverLetterPDF()">
           <i class="fas fa-file-pdf"></i>
-          <span>Cover Letter (PDF)</span>
+          <span data-i18n="coverLetterPdf">Cover Letter (PDF)</span>
         </button>
         <button class="action-card glass" onclick="downloadCoverLetterDocx()">
           <i class="fas fa-file-word"></i>
-          <span>Cover Letter (DOCX)</span>
+          <span data-i18n="coverLetterDocx">Cover Letter (DOCX)</span>
         </button>
         <button class="action-card glass" onclick="printCV()">
           <i class="fas fa-print"></i>
-          <span>Print CV</span>
+          <span data-i18n="printCv">Print CV</span>
         </button>
         <button class="action-card glass" onclick="printCoverLetter()">
           <i class="fas fa-print"></i>
-          <span>Print Cover Letter</span>
+          <span data-i18n="printCoverLetter">Print Cover Letter</span>
         </button>
       </div>
 
@@ -228,52 +228,52 @@
         <!-- Form Panel -->
         <div class="builder-form glass">
           <div class="form-nav">
-            <button class="form-nav-btn active" data-section="personal"><i class="fas fa-user"></i> Personal</button>
-            <button class="form-nav-btn" data-section="professional"><i class="fas fa-briefcase"></i> Professional</button>
-            <button class="form-nav-btn" data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
-            <button class="form-nav-btn" data-section="experience"><i class="fas fa-history"></i> Experience</button>
-            <button class="form-nav-btn" data-section="skills"><i class="fas fa-code"></i> Skills</button>
-            <button class="form-nav-btn" data-section="additional"><i class="fas fa-plus-circle"></i> Additional</button>
+            <button class="form-nav-btn active" data-section="personal" data-i18n="personalInfo"><i class="fas fa-user"></i> Personal</button>
+            <button class="form-nav-btn" data-section="professional" data-i18n="professionalInfo"><i class="fas fa-briefcase"></i> Professional</button>
+            <button class="form-nav-btn" data-section="education" data-i18n="education"><i class="fas fa-graduation-cap"></i> Education</button>
+            <button class="form-nav-btn" data-section="experience" data-i18n="experience"><i class="fas fa-history"></i> Experience</button>
+            <button class="form-nav-btn" data-section="skills" data-i18n="skills"><i class="fas fa-code"></i> Skills</button>
+            <button class="form-nav-btn" data-section="additional" data-i18n="additional"><i class="fas fa-plus-circle"></i> Additional</button>
           </div>
 
           <div class="form-sections">
             <!-- PERSONAL -->
             <div class="form-section active" id="section-personal">
-              <h3>Personal Information</h3>
+              <h3 data-i18n="personalInfo">Personal Information</h3>
               <div class="form-group">
-                <label>Full Name</label>
+                <label data-i18n="fullName">Full Name</label>
                 <input type="text" id="fullName" placeholder="e.g. John Anderson" data-field="fullName">
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>Email</label>
+                  <label data-i18n="email">Email</label>
                   <input type="email" id="email" placeholder="john@example.com" data-field="email">
                 </div>
                 <div class="form-group">
-                  <label>Phone</label>
+                  <label data-i18n="phone">Phone</label>
                   <input type="tel" id="phone" placeholder="+1 (555) 000-0000" data-field="phone">
                 </div>
               </div>
               <div class="form-group">
-                <label>Location</label>
+                <label data-i18n="location">Location</label>
                 <input type="text" id="location" placeholder="e.g. New York, NY" data-field="location">
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label>LinkedIn</label>
+                  <label data-i18n="linkedin">LinkedIn</label>
                   <input type="url" id="linkedin" placeholder="linkedin.com/in/username" data-field="linkedin">
                 </div>
                 <div class="form-group">
-                  <label>Portfolio</label>
+                  <label data-i18n="portfolio">Portfolio</label>
                   <input type="url" id="portfolio" placeholder="yourwebsite.com" data-field="portfolio">
                 </div>
               </div>
               <div class="form-group">
-                <label>Profile Photo</label>
+                <label data-i18n="photo">Profile Photo</label>
                 <div class="photo-upload" id="photoUpload">
                   <div class="photo-placeholder">
                     <i class="fas fa-camera"></i>
-                    <span>Upload Photo</span>
+                    <span data-i18n="uploadPhoto">Upload Photo</span>
                   </div>
                   <img id="photoPreview" class="photo-preview" alt="Profile Photo">
                   <input type="file" id="photoInput" accept="image/*" style="display:none">
@@ -286,13 +286,13 @@
 
             <!-- PROFESSIONAL -->
             <div class="form-section" id="section-professional">
-              <h3>Professional Information</h3>
+              <h3 data-i18n="professionalInfo">Professional Information</h3>
               <div class="form-group">
-                <label>Professional Title</label>
+                <label data-i18n="professionalTitle">Professional Title</label>
                 <input type="text" id="professionalTitle" placeholder="e.g. Senior Software Engineer" data-field="professionalTitle">
               </div>
               <div class="form-group">
-                <label>Career Summary</label>
+                <label data-i18n="careerSummary">Career Summary</label>
                 <textarea id="careerSummary" rows="5" placeholder="Write a brief professional summary highlighting your key achievements and career goals..." data-field="careerSummary"></textarea>
                 <span class="char-count"><span id="summaryChars">0</span>/500</span>
               </div>
@@ -333,35 +333,35 @@
             <!-- ADDITIONAL SECTIONS -->
             <div class="form-section" id="section-additional">
               <div class="section-header">
-                <h3>Certifications</h3>
+                <h3 data-i18n="certifications">Certifications</h3>
                 <button class="btn btn-sm btn-primary" onclick="addCertification()"><i class="fas fa-plus"></i> Add</button>
               </div>
               <div id="certificationsContainer"></div>
 
               <div class="section-header" style="margin-top:20px">
-                <h3>Languages</h3>
+                <h3 data-i18n="languages">Languages</h3>
                 <button class="btn btn-sm btn-primary" onclick="addLanguage()"><i class="fas fa-plus"></i> Add</button>
               </div>
               <div id="languagesContainer"></div>
 
               <div class="section-header" style="margin-top:20px">
-                <h3>Publications</h3>
+                <h3 data-i18n="publications">Publications</h3>
                 <button class="btn btn-sm btn-primary" onclick="addPublication()"><i class="fas fa-plus"></i> Add</button>
               </div>
               <div id="publicationsContainer"></div>
 
               <div class="section-header" style="margin-top:20px">
-                <h3>Volunteer Work</h3>
+                <h3 data-i18n="volunteerWork">Volunteer Work</h3>
                 <button class="btn btn-sm btn-primary" onclick="addVolunteerWork()"><i class="fas fa-plus"></i> Add</button>
               </div>
               <div id="volunteerWorkContainer"></div>
 
               <div class="section-header" style="margin-top:20px">
-                <h3>Referees</h3>
+                <h3 data-i18n="referees">Referees</h3>
                 <button class="btn btn-sm btn-primary" onclick="addReferee()"><i class="fas fa-plus"></i> Add</button>
               </div>
               <div class="form-group" style="margin-bottom:12px">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.85rem;font-weight:500;color:var(--text-secondary)">
+                <label data-i18n="availableUponRequest" style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:0.85rem;font-weight:500;color:var(--text-secondary)">
                   <input type="checkbox" id="refereesAvailableUponRequest" onchange="toggleRefereesAvailable(this.checked)" style="width:auto;accent-color:var(--accent-primary)">
                   Available upon request
                 </label>
@@ -375,7 +375,7 @@
         <div class="builder-preview">
           <div class="preview-toolbar">
             <div class="template-selector">
-              <label>Template:</label>
+              <label data-i18n="template">Template:</label>
               <div class="template-buttons">
                 <button class="template-btn active" data-template="modern" onclick="setTemplate('modern')">Modern</button>
                 <button class="template-btn" data-template="professional" onclick="setTemplate('professional')">Professional</button>
@@ -386,16 +386,16 @@
               </div>
             </div>
             <div class="preview-actions">
-              <button class="btn btn-sm btn-primary" onclick="downloadCVPdf()"><i class="fas fa-file-pdf"></i> PDF</button>
-              <button class="btn btn-sm btn-outline" onclick="downloadCVDocx()"><i class="fas fa-file-word"></i> DOCX</button>
-              <button class="btn btn-sm btn-outline" onclick="printCV()"><i class="fas fa-print"></i> Print</button>
+              <button class="btn btn-sm btn-primary" onclick="downloadCVPdf()" data-i18n="downloadPdf"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn btn-sm btn-outline" onclick="downloadCVDocx()" data-i18n="downloadDocx"><i class="fas fa-file-word"></i> DOCX</button>
+              <button class="btn btn-sm btn-outline" onclick="printCV()" data-i18n="print"><i class="fas fa-print"></i> Print</button>
             </div>
           </div>
           <div class="cv-preview" id="cvPreview">
             <div class="cv-empty-state">
               <i class="fas fa-file-alt"></i>
-              <h3>Your CV will appear here</h3>
-              <p>Fill in your details in the form to see a live preview</p>
+              <h3 data-i18n="cvWillAppear">Your CV will appear here</h3>
+              <p data-i18n="fillDetails">Fill in your details in the form to see a live preview</p>
             </div>
           </div>
         </div>
@@ -408,33 +408,33 @@
         <div class="builder-form glass">
           <h3>Cover Letter Details</h3>
           <div class="form-group">
-            <label>Company Name</label>
+            <label data-i18n="company">Company Name</label>
             <input type="text" id="clCompany" placeholder="e.g. Acme Corporation">
           </div>
           <div class="form-group">
-            <label>Hiring Manager Name</label>
+            <label data-i18n="hiringManager">Hiring Manager Name</label>
             <input type="text" id="clManager" placeholder="e.g. Jane Smith">
           </div>
           <div class="form-group">
-            <label>Job Position</label>
+            <label data-i18n="jobPosition">Job Position</label>
             <input type="text" id="clPosition" placeholder="e.g. Frontend Developer">
           </div>
           <div class="form-group">
-            <label>Company Address (optional)</label>
+            <label data-i18n="companyAddress">Company Address (optional)</label>
             <input type="text" id="clAddress" placeholder="e.g. 123 Business Ave, Suite 100">
           </div>
           <div class="form-group">
-            <label>Additional Notes (optional)</label>
+            <label data-i18n="additionalNotes">Additional Notes (optional)</label>
             <textarea id="clNotes" rows="4" placeholder="Any specific points you want to highlight..."></textarea>
           </div>
-          <button class="btn btn-primary btn-block" onclick="regenerateCoverLetter()">
+          <button class="btn btn-primary btn-block" onclick="regenerateCoverLetter()" data-i18n="generateCoverLetterBtn">
             <i class="fas fa-sync-alt"></i> Generate Cover Letter
           </button>
         </div>
         <div class="builder-preview">
           <div class="preview-toolbar">
             <div class="template-selector">
-              <label>Style:</label>
+              <label data-i18n="style">Style:</label>
               <div class="template-buttons">
                 <button class="cl-template-btn active" data-template="modern" onclick="setClTemplate('modern')">Modern</button>
                 <button class="cl-template-btn" data-template="professional" onclick="setClTemplate('professional')">Professional</button>
@@ -442,16 +442,16 @@
               </div>
             </div>
             <div class="preview-actions">
-              <button class="btn btn-sm btn-primary" onclick="downloadCoverLetterPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-              <button class="btn btn-sm btn-outline" onclick="downloadCoverLetterDocx()"><i class="fas fa-file-word"></i> DOCX</button>
-              <button class="btn btn-sm btn-outline" onclick="printCoverLetter()"><i class="fas fa-print"></i> Print</button>
+              <button class="btn btn-sm btn-primary" onclick="downloadCoverLetterPDF()" data-i18n="downloadPdf"><i class="fas fa-file-pdf"></i> PDF</button>
+              <button class="btn btn-sm btn-outline" onclick="downloadCoverLetterDocx()" data-i18n="downloadDocx"><i class="fas fa-file-word"></i> DOCX</button>
+              <button class="btn btn-sm btn-outline" onclick="printCoverLetter()" data-i18n="print"><i class="fas fa-print"></i> Print</button>
             </div>
           </div>
           <div class="cl-preview" id="clPreview">
             <div class="cv-empty-state">
               <i class="fas fa-envelope-open-text"></i>
-              <h3>Your Cover Letter will appear here</h3>
-              <p>Enter the company details and click Generate</p>
+              <h3 data-i18n="clWillAppear">Your Cover Letter will appear here</h3>
+              <p data-i18n="enterCompanyDetails">Enter the company details and click Generate</p>
             </div>
           </div>
         </div>
@@ -462,20 +462,20 @@
     <section class="tab-content" id="tab-settings">
       <div class="settings-grid">
         <div class="settings-card glass">
-          <h3><i class="fas fa-palette"></i> Appearance</h3>
+          <h3 data-i18n="appearance"><i class="fas fa-palette"></i> Appearance</h3>
           <div class="form-group">
-            <label>Theme</label>
+            <label data-i18n="theme">Theme</label>
             <div class="theme-selector">
               <button class="theme-option active" data-theme="light" onclick="setTheme('light')">
-                <i class="fas fa-sun"></i> Light
+                <i class="fas fa-sun"></i> <span data-i18n="light">Light</span>
               </button>
               <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
-                <i class="fas fa-moon"></i> Dark
+                <i class="fas fa-moon"></i> <span data-i18n="dark">Dark</span>
               </button>
             </div>
           </div>
           <div class="form-group">
-            <label>Accent Color</label>
+            <label data-i18n="accentColor">Accent Color</label>
             <div class="accent-color-options" id="accentColorOptions">
               <button class="accent-swatch active" data-color="#6c5ce7" style="background:#6c5ce7" title="Purple"></button>
               <button class="accent-swatch" data-color="#0984e3" style="background:#0984e3" title="Blue"></button>
@@ -488,51 +488,52 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Language</label>
+            <label data-i18n="language">Language</label>
             <select id="languageSelect" class="form-control" onchange="setLanguage(this.value)" style="width:100%;padding:10px 14px;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-input);color:var(--text-primary)">
               <option value="en">English</option>
+              <option value="sw">Kiswahili</option>
             </select>
           </div>
         </div>
         <div class="settings-card glass">
-          <h3><i class="fas fa-database"></i> Data Management</h3>
+          <h3 data-i18n="dataManagement"><i class="fas fa-database"></i> Data Management</h3>
           <div class="settings-actions">
-            <button class="btn btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> Export Data (JSON)</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> Import Data (JSON)</button>
-            <button class="btn btn-danger" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> Clear All Data</button>
+            <button class="btn btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> <span data-i18n="exportData">Export Data</span> (JSON)</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> <span data-i18n="importData">Import Data</span> (JSON)</button>
+            <button class="btn btn-danger" onclick="clearAllData()"><i class="fas fa-trash-alt"></i> <span data-i18n="clearAllData">Clear All Data</span></button>
           </div>
         </div>
         <div class="settings-card glass">
-          <h3><i class="fas fa-users"></i> Profiles</h3>
-          <p class="text-muted">Create separate CV profiles for different job applications. Each profile stores its own data.</p>
+          <h3 data-i18n="profiles"><i class="fas fa-users"></i> Profiles</h3>
+          <p class="text-muted" data-i18n="profilesDesc">Create separate CV profiles for different job applications. Each profile stores its own data.</p>
           <div id="profileList" class="profile-list"></div>
           <div class="profile-create">
-            <input type="text" id="newProfileName" placeholder="e.g. Google Application" class="form-control">
-            <button class="btn btn-primary" onclick="createProfile(document.getElementById('newProfileName').value);document.getElementById('newProfileName').value=''"><i class="fas fa-plus"></i> Create</button>
+            <input type="text" id="newProfileName" data-i18n-placeholder="profilePlaceholder" placeholder="e.g. Google Application" class="form-control">
+            <button class="btn btn-primary" onclick="createProfile(document.getElementById('newProfileName').value);document.getElementById('newProfileName').value=''"><i class="fas fa-plus"></i> <span data-i18n="createProfile">Create</span></button>
           </div>
         </div>
         <div class="settings-card glass">
-          <h3><i class="fas fa-chart-line"></i> Job Match Keywords</h3>
-          <p class="text-muted">Add custom skill keywords for the Job Match analysis. Each entry maps a skill name to comma-separated keywords found in job descriptions.</p>
+          <h3 data-i18n="jobMatchKeywords"><i class="fas fa-chart-line"></i> Job Match Keywords</h3>
+          <p class="text-muted" data-i18n="jobMatchDesc">Add custom skill keywords for the Job Match analysis. Each entry maps a skill name to comma-separated keywords found in job descriptions.</p>
           <div id="customSkillsContainer" class="custom-skills-list"></div>
           <div class="form-row" style="margin-top:12px">
             <div class="form-group">
-              <label>Skill Name</label>
-              <input type="text" id="customSkillName" placeholder="e.g. Docker">
+              <label data-i18n="skillName">Skill Name</label>
+              <input type="text" id="customSkillName" data-i18n-placeholder="skillPlaceholder" placeholder="e.g. Docker">
             </div>
             <div class="form-group">
-              <label>Keywords (comma-separated)</label>
-              <input type="text" id="customSkillKeywords" placeholder="e.g. docker, container, docker compose">
+              <label data-i18n="keywords">Keywords (comma-separated)</label>
+              <input type="text" id="customSkillKeywords" data-i18n-placeholder="keywordsPlaceholder" placeholder="e.g. docker, container, docker compose">
             </div>
           </div>
-          <button class="btn btn-primary" onclick="addCustomSkill()"><i class="fas fa-plus"></i> Add Keyword Mapping</button>
+          <button class="btn btn-primary" onclick="addCustomSkill()"><i class="fas fa-plus"></i> <span data-i18n="keywordMapping">Add Keyword Mapping</span></button>
         </div>
         <div class="settings-card glass">
-          <h3><i class="fas fa-history"></i> Version History</h3>
-          <p class="text-muted">Save snapshots of your CV to compare different versions or revert to a previous state.</p>
+          <h3 data-i18n="versionHistory"><i class="fas fa-history"></i> Version History</h3>
+          <p class="text-muted" data-i18n="versionHistoryDesc">Save snapshots of your CV to compare different versions or revert to a previous state.</p>
           <div class="version-save-row">
-            <input type="text" id="versionName" placeholder="e.g. Google Application v2" class="form-control" style="flex:1">
-            <button class="btn btn-primary" onclick="saveCVVersion()"><i class="fas fa-save"></i> Save Version</button>
+            <input type="text" id="versionName" data-i18n-placeholder="versionNamePlaceholder" placeholder="e.g. Google Application v2" class="form-control" style="flex:1">
+            <button class="btn btn-primary" onclick="saveCVVersion()"><i class="fas fa-save"></i> <span data-i18n="saveVersion">Save Version</span></button>
           </div>
           <div id="versionList" class="version-list"></div>
         </div>
@@ -543,21 +544,21 @@
     <section class="tab-content" id="tab-jobmatch">
       <div class="jobmatch-layout">
         <div class="jobmatch-input glass">
-          <h3><i class="fas fa-paste"></i> Job Description</h3>
-          <p class="text-muted">Paste the job description below to see how well your CV matches.</p>
+          <h3 data-i18n="jobDescription"><i class="fas fa-paste"></i> Job Description</h3>
+          <p class="text-muted" data-i18n="jobMatchDesc2">Paste the job description below to see how well your CV matches.</p>
           <div class="form-group">
-            <label>Job Description</label>
-            <textarea id="jobDescription" rows="12" placeholder="Paste the full job description here..."></textarea>
+            <label data-i18n="jobDescriptionLabel">Job Description</label>
+            <textarea id="jobDescription" data-i18n-placeholder="jobDescriptionPlaceholder" rows="12" placeholder="Paste the full job description here..."></textarea>
           </div>
           <button class="btn btn-primary btn-block" onclick="analyzeJobMatch()">
-            <i class="fas fa-search"></i> Analyze Match
+            <i class="fas fa-search"></i> <span data-i18n="analyzeMatch">Analyze Match</span>
           </button>
         </div>
         <div class="jobmatch-results" id="jobMatchResults">
           <div class="cv-empty-state">
             <i class="fas fa-chart-line"></i>
-            <h3>No analysis yet</h3>
-            <p>Paste a job description and click "Analyze Match" to see your score</p>
+            <h3 data-i18n="noAnalysis">No analysis yet</h3>
+            <p data-i18n="pasteJobDesc">Paste a job description and click "Analyze Match" to see your score</p>
           </div>
         </div>
       </div>
@@ -567,51 +568,51 @@
     <section class="tab-content" id="tab-share">
       <div class="share-hero glass">
         <div class="share-hero-icon"><i class="fas fa-brain"></i></div>
-        <h2>Share SmartCV AI</h2>
-        <p>Help others discover the easiest way to build professional CVs and cover letters.</p>
+        <h2 data-i18n="shareSmartCV">Share SmartCV AI</h2>
+        <p data-i18n="shareDesc">Help others discover the easiest way to build professional CVs and cover letters.</p>
       </div>
 
       <div class="share-grid">
         <div class="share-card glass">
-          <h3><i class="fas fa-link"></i> Share Link</h3>
-          <p class="text-muted">Copy the direct link to share anywhere.</p>
+          <h3 data-i18n="directLink"><i class="fas fa-link"></i> Share Link</h3>
+          <p class="text-muted" data-i18n="directLinkDesc">Copy the direct link to share anywhere.</p>
           <div class="share-link-row">
             <input type="text" id="shareLinkInput" value="https://smartcv-generator.vercel.app" readonly>
-            <button class="btn btn-primary" onclick="copyShareLink()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn btn-primary" onclick="copyShareLink()"><i class="fas fa-copy"></i> <span data-i18n="copy">Copy</span></button>
           </div>
-          <div class="share-copied-msg" id="shareCopiedMsg"><i class="fas fa-check-circle"></i> Link copied to clipboard!</div>
+          <div class="share-copied-msg" id="shareCopiedMsg"><i class="fas fa-check-circle"></i> <span data-i18n="linkCopied">Link copied to clipboard!</span></div>
         </div>
 
         <div class="share-card glass">
-          <h3><i class="fas fa-globe"></i> Share on Social</h3>
-          <p class="text-muted">Spread the word with one click.</p>
+          <h3 data-i18n="shareOnSocial"><i class="fas fa-globe"></i> Share on Social</h3>
+          <p class="text-muted" data-i18n="shareOnSocialDesc">Spread the word with one click.</p>
           <div class="share-social-buttons">
             <button class="share-btn share-btn-twitter" onclick="shareOnTwitter()">
-              <i class="fab fa-twitter"></i> Twitter / X
+              <i class="fab fa-twitter"></i> <span data-i18n="twitterShare">Twitter / X</span>
             </button>
             <button class="share-btn share-btn-linkedin" onclick="shareOnLinkedIn()">
-              <i class="fab fa-linkedin"></i> LinkedIn
+              <i class="fab fa-linkedin"></i> <span data-i18n="linkedinShare">LinkedIn</span>
             </button>
             <button class="share-btn share-btn-whatsapp" onclick="shareOnWhatsApp()">
-              <i class="fab fa-whatsapp"></i> WhatsApp
+              <i class="fab fa-whatsapp"></i> <span data-i18n="whatsappShare">WhatsApp</span>
             </button>
             <button class="share-btn share-btn-email" onclick="shareViaEmail()">
-              <i class="fas fa-envelope"></i> Email
+              <i class="fas fa-envelope"></i> <span data-i18n="emailShare">Email</span>
             </button>
           </div>
           <button class="btn btn-primary btn-block" onclick="shareNative()" id="shareNativeBtn">
-            <i class="fas fa-share-alt"></i> Share via...
+            <i class="fas fa-share-alt"></i> <span data-i18n="shareVia">Share via...</span>
           </button>
         </div>
 
         <div class="share-card glass">
-          <h3><i class="fas fa-code"></i> Embed Badge</h3>
-          <p class="text-muted">Add a SmartCV AI badge to your portfolio or website.</p>
+          <h3 data-i18n="embedCode"><i class="fas fa-code"></i> Embed Badge</h3>
+          <p class="text-muted" data-i18n="embedDesc">Add a SmartCV AI badge to your portfolio or website.</p>
           <div class="share-link-row">
             <input type="text" id="shareEmbedInput" value='&lt;a href="https://smartcv-generator.vercel.app" target="_blank" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:#fff;border-radius:8px;font-family:sans-serif;font-weight:600;text-decoration:none"&gt;Built with SmartCV AI&lt;/a&gt;' readonly>
-            <button class="btn btn-primary" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn btn-primary" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> <span data-i18n="copy">Copy</span></button>
           </div>
-          <div class="share-copied-msg" id="embedCopiedMsg"><i class="fas fa-check-circle"></i> Embed code copied!</div>
+          <div class="share-copied-msg" id="embedCopiedMsg"><i class="fas fa-check-circle"></i> <span data-i18n="embedCopied">Embed code copied!</span></div>
         </div>
       </div>
     </section>

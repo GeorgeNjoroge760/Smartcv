@@ -78,13 +78,14 @@ export function printCoverLetter() {
     .finally(() => { if (restore) restore(); });
 }
 
-function getWordStyles() {
+function getWordStyles(accentColor) {
+  const accent = accentColor || '#6c5ce7';
   return `
     <style>
       body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #333; line-height: 1.5; margin: 1in; }
       h1 { font-size: 18pt; margin-bottom: 2pt; color: #333; }
-      h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
-      h3 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; margin-top: 10pt; margin-bottom: 6pt; }
+      h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: ${accent}; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
+      h3 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; color: ${accent}; margin-top: 10pt; margin-bottom: 6pt; }
       p { margin: 4pt 0; color: #333; }
       .cv-content { background: #fff; color: #333; padding: 0; }
       .cv-header { margin-bottom: 16px; }
@@ -92,20 +93,20 @@ function getWordStyles() {
       .cv-title { color: #666; font-size: 11pt; margin-bottom: 4pt; }
       .cv-contact span { margin-right: 12pt; color: #555; font-size: 10pt; }
       .cv-section { margin-bottom: 10pt; }
-      .cv-section h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
+      .cv-section h2 { font-size: 13pt; text-transform: uppercase; letter-spacing: 1px; color: ${accent}; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-top: 14pt; margin-bottom: 8pt; }
       .cv-item { margin-bottom: 8pt; }
       .cv-item-title { font-weight: bold; color: #333; }
-      .cv-item-subtitle { color: #6c5ce7; }
+      .cv-item-subtitle { color: ${accent}; }
       .cv-item-date { color: #999; font-size: 10pt; }
       .cv-item-desc { margin-top: 2pt; color: #555; }
       .cv-skills-list span { display: inline-block; margin: 2pt 4pt 2pt 0; padding: 2pt 8pt; background: #eee; border-radius: 10pt; color: #555; font-size: 9pt; }
       .cv-header-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
       .cv-item-group { margin-bottom: 10pt; }
-      .cv-item-group h3 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 3pt; margin-bottom: 6pt; }
+      .cv-item-group h3 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; color: ${accent}; border-bottom: 1px solid #ddd; padding-bottom: 3pt; margin-bottom: 6pt; }
       .cv-referee-info { font-size: 10pt; color: #555; }
       .cl-content { background: #fff; color: #333; padding: 0; }
       .cl-sender { font-weight: 700; }
-      .cl-template-modern .cl-sender { font-size: 1.4rem; color: #6c5ce7; }
+      .cl-template-modern .cl-sender { font-size: 1.4rem; color: ${accent}; }
       .cl-template-professional .cl-sender { font-size: 1.6rem; color: #2c3e50; }
       .cl-template-minimal .cl-sender { font-size: 1.2rem; color: #222; }
       .cl-sender-email { color: #666; font-size: 0.85rem; }
@@ -128,6 +129,7 @@ function downloadBlob(blob, filename) {
 }
 
 function downloadWordDoc(htmlContent, filename) {
+  const accentColor = getData().accentColor || '#6c5ce7';
   const wordDoc = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office"
           xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -143,7 +145,7 @@ function downloadWordDoc(htmlContent, filename) {
         </w:WordDocument>
       </xml>
       <![endif]-->
-      ${getWordStyles()}
+      ${getWordStyles(accentColor)}
     </head>
     <body>
       ${htmlContent}
