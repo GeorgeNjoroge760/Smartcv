@@ -102,6 +102,7 @@ function getWordStyles() {
       .cv-header-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
       .cv-item-group { margin-bottom: 10pt; }
       .cv-item-group h3 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1px; color: #6c5ce7; border-bottom: 1px solid #ddd; padding-bottom: 3pt; margin-bottom: 6pt; }
+      .cv-referee-info { font-size: 10pt; color: #555; }
       .cl-content { background: #fff; color: #333; padding: 0; }
       .cl-sender { font-weight: 700; }
       .cl-template-modern .cl-sender { font-size: 1.4rem; color: #6c5ce7; }

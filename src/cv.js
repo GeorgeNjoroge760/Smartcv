@@ -191,5 +191,23 @@ function buildAdditionalSections(d) {
     </div>`);
   }
 
+  if (d.refereesAvailableUponRequest) {
+    sections.push(`<div class="cv-item-group">
+      <h3>Referees</h3>
+      <p class="cv-item-desc">Available upon request</p>
+    </div>`);
+  } else if (d.referees && d.referees.length > 0) {
+    sections.push(`<div class="cv-item-group">
+      <h3>Referees</h3>
+      ${d.referees.map(r => `<div class="cv-item">
+        <div class="cv-item-title">${escapeHtml(r.name)}</div>
+        ${r.title ? `<div class="cv-item-subtitle">${escapeHtml(r.title)}</div>` : ''}
+        ${r.organization ? `<div class="cv-item-desc">${escapeHtml(r.organization)}</div>` : ''}
+        ${r.email ? `<div class="cv-item-date">${escapeHtml(r.email)}</div>` : ''}
+        ${r.phone ? `<div class="cv-item-date">${escapeHtml(r.phone)}</div>` : ''}
+      </div>`).join('')}
+    </div>`);
+  }
+
   return sections.join('');
 }

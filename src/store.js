@@ -36,6 +36,7 @@ export function getDefaultData() {
     professionalTitle: '', careerSummary: '', photo: '',
     education: [], experience: [], skills: [],
     certifications: [], languages: [], publications: [], volunteerWork: [],
+    referees: [], refereesAvailableUponRequest: false,
     coverLetter: { company: '', manager: '', position: '', address: '', notes: '' },
     customSkills: [],
     template: 'modern', clTemplate: 'modern', theme: 'light',

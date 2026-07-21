@@ -49,6 +49,7 @@ function renderAll() {
   renderLanguages();
   renderPublications();
   renderVolunteerWork();
+  renderReferees();
   renderCustomSkills();
   renderProfileList();
   updateProfileSelector();
@@ -633,6 +634,76 @@ function renderVolunteerWork() {
   });
 }
 
+// ---- Referees ----
+
+function renderReferees() {
+  const container = document.getElementById('refereesContainer');
+  const checkbox = document.getElementById('refereesAvailableUponRequest');
+  if (!container) return;
+  const d = getData();
+  if (checkbox) checkbox.checked = !!d.refereesAvailableUponRequest;
+  if ((d.referees || []).length === 0 && !d.refereesAvailableUponRequest) {
+    container.innerHTML = '<p class="text-muted" style="font-size:0.85rem;color:var(--text-muted)">No referees added yet.</p>';
+    return;
+  }
+  container.innerHTML = (d.referees || []).map((ref, i) => `
+    <div class="entry-card" data-ref-index="${i}">
+      <div class="entry-header">
+        <h4><i class="fas fa-user-tie"></i> Referee #${i + 1}</h4>
+        <button class="entry-remove" data-remove-ref="${i}"><i class="fas fa-trash-alt"></i> Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" value="${escapeAttr(ref.name)}" data-ref-field="name" data-ref-idx="${i}" placeholder="e.g. Dr. Jane Smith">
+        </div>
+        <div class="form-group">
+          <label>Title / Position</label>
+          <input type="text" value="${escapeAttr(ref.title)}" data-ref-field="title" data-ref-idx="${i}" placeholder="e.g. Senior Manager">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Organization</label>
+        <input type="text" value="${escapeAttr(ref.organization)}" data-ref-field="organization" data-ref-idx="${i}" placeholder="e.g. Acme Corporation">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" value="${escapeAttr(ref.email)}" data-ref-field="email" data-ref-idx="${i}" placeholder="e.g. jane.smith@company.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" value="${escapeAttr(ref.phone)}" data-ref-field="phone" data-ref-idx="${i}" placeholder="e.g. +1 (555) 000-0000">
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-remove-ref]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      d.referees.splice(parseInt(btn.dataset.removeRef), 1);
+      renderReferees();
+      saveLocal();
+      renderCV();
+    });
+  });
+  container.querySelectorAll('[data-ref-field]').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.refIdx);
+      d.referees[idx][input.dataset.refField] = input.value;
+      saveLocal();
+      scheduleRender();
+    });
+  });
+}
+
+function toggleRefereesAvailable(checked) {
+  const d = getData();
+  d.refereesAvailableUponRequest = checked;
+  saveLocal();
+  renderCV();
+}
+
 // ---- Custom Skills ----
 
 function renderCustomSkills() {
@@ -924,6 +995,8 @@ Object.assign(window, {
   addLanguage: () => { if (!getData().languages) getData().languages = []; getData().languages.push({ name: '', level: '' }); renderLanguages(); saveLocal(); renderCV(); },
   addPublication: () => { if (!getData().publications) getData().publications = []; getData().publications.push({ title: '', publisher: '', date: '', url: '' }); renderPublications(); saveLocal(); renderCV(); },
   addVolunteerWork: () => { if (!getData().volunteerWork) getData().volunteerWork = []; getData().volunteerWork.push({ role: '', organization: '', date: '', description: '' }); renderVolunteerWork(); saveLocal(); renderCV(); },
+  addReferee: () => { if (!getData().referees) getData().referees = []; getData().referees.push({ name: '', title: '', organization: '', email: '', phone: '' }); renderReferees(); saveLocal(); renderCV(); },
+  toggleRefereesAvailable,
   addCustomSkill,
   regenerateCoverLetter: renderCoverLetter,
   renderAuthModal,
