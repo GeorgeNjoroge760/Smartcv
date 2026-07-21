@@ -1,4 +1,6 @@
 import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { getData } from './store.js';
 import { trackExport } from './analytics.js';
 
@@ -41,17 +43,29 @@ function getPdfOptions(filename) {
 }
 
 function singlePagePdf(el, filename) {
-  const opt = getPdfOptions(filename);
-  return html2pdf()
-    .set(opt)
-    .from(el)
-    .toPdf()
-    .get('pdf')
-    .then(pdf => {
-      const pages = pdf.internal.getNumberOfPages();
-      for (let i = pages; i > 1; i--) pdf.deletePage(i);
-      pdf.save(filename);
-    });
+  const margin = 0.4;
+  const pdf = new jsPDF({ unit: 'in', format: 'a4', orientation: 'portrait' });
+  const pageW = pdf.internal.pageSize.getWidth() - margin * 2;
+  const pageH = pdf.internal.pageSize.getHeight() - margin * 2;
+
+  return html2canvas(el, {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    width: 700,
+    windowWidth: 700,
+  }).then(canvas => {
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+    const ratio = Math.min(pageW / (imgW / 2), pageH / (imgH / 2));
+    const scaledW = (imgW / 2) * ratio;
+    const scaledH = (imgH / 2) * ratio;
+    const x = margin + (pageW - scaledW) / 2;
+    const y = margin;
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+    pdf.addImage(imgData, 'JPEG', x, y, scaledW, scaledH);
+    pdf.save(filename);
+  });
 }
 
 export function downloadCVPdf() {
