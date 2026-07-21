@@ -184,7 +184,16 @@ export function translatePage() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const translated = t(key);
-    if (translated) el.textContent = translated;
+    if (!translated) return;
+    for (let i = el.childNodes.length - 1; i >= 0; i--) {
+      if (el.childNodes[i].nodeType === Node.TEXT_NODE && el.childNodes[i].textContent.trim()) {
+        el.childNodes[i].textContent = ' ' + translated;
+        return;
+      }
+    }
+    if (el.children.length === 0) {
+      el.textContent = translated;
+    }
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
