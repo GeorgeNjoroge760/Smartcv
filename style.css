@@ -410,16 +410,19 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 /* ====== TOPBAR ====== */
 .topbar {
-  height: var(--topbar-height);
+  height: auto;
+  min-height: var(--topbar-height);
   display: flex;
   align-items: center;
-  padding: 0 32px;
-  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  gap: 8px;
   border-bottom: 1px solid var(--border-color);
   background: var(--bg-secondary);
   position: sticky;
   top: 0;
   z-index: 100;
+  overflow-x: hidden;
   transition: background var(--transition), border var(--transition);
 }
 
@@ -754,6 +757,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 .form-group {
   margin-bottom: 16px;
+  min-width: 0;
 }
 
 .form-group label {
@@ -1628,12 +1632,16 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 /* ====== SETTINGS ====== */
 .settings-grid {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 20px;
   max-width: 700px;
+  width: 100%;
 }
 
 .settings-card {
   padding: 28px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .settings-card h3 {
@@ -1924,14 +1932,6 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 }
 
 @media (max-width: 900px) {
-  .topbar {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: var(--topbar-height);
-    padding: 8px 16px;
-    gap: 6px;
-  }
-
   .topbar-title {
     order: -1;
     flex: 1;
@@ -2276,6 +2276,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   }
   .settings-actions .btn {
     justify-content: center;
+    width: 100%;
   }
 
   /* Profiles in settings */
