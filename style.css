@@ -273,6 +273,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   display: flex;
   flex-direction: column;
   z-index: 1000;
+  overflow-y: auto;
   transition: transform var(--transition), background var(--transition), border var(--transition);
 }
 
@@ -387,13 +388,13 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 [data-theme="dark"] .theme-toggle .fa-sun { display: inline-block; }
 
 .sidebar-overlay {
-  display: none;
+  visibility: hidden;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
   z-index: 999;
   opacity: 0;
-  transition: opacity var(--transition);
+  transition: opacity 0.3s, visibility 0s 0.3s;
 }
 
 /* ====== MAIN CONTENT ====== */
@@ -401,7 +402,9 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   margin-left: var(--sidebar-width);
   flex: 1;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 0;
+  overflow-x: hidden;
   transition: margin var(--transition);
 }
 
@@ -515,6 +518,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 .tab-content {
   display: none;
   padding: 32px;
+  overflow-x: hidden;
   animation: fadeIn 0.4s ease;
 }
 
@@ -885,6 +889,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   padding: 16px;
   margin-bottom: 12px;
   position: relative;
+  overflow: hidden;
   animation: slideIn 0.3s ease;
 }
 
@@ -1952,6 +1957,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     width: 100%;
     justify-content: flex-end;
     gap: 4px;
+    flex-wrap: wrap;
   }
   .topbar-actions .btn {
     padding: 6px 10px;
@@ -1983,8 +1989,9 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     --sidebar-width: 280px;
   }
   .sidebar-overlay.open {
-    display: block;
+    visibility: visible;
     opacity: 1;
+    transition: opacity 0.3s, visibility 0s 0s;
   }
 
   .main-content {
@@ -2080,7 +2087,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   }
   .form-row {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 8px;
   }
   .form-group input,
   .form-group textarea {
@@ -2123,7 +2130,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   /* CV Preview */
   .cv-preview, .cl-preview {
     min-height: 300px;
-    overflow: visible;
+    overflow-x: hidden;
   }
   .cv-content {
     font-size: 0.85rem;
@@ -2323,13 +2330,26 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
   /* Share */
   .share-hero {
-    padding: 24px 20px;
+    padding: 32px 20px;
   }
   .share-hero h2 {
     font-size: 1.2rem;
   }
   .share-card {
     padding: 20px;
+  }
+  .share-card h3 {
+    font-size: 0.95rem;
+  }
+  .share-link-row {
+    flex-direction: column;
+  }
+  .share-link-row input {
+    flex: none;
+    width: 100%;
+  }
+  .share-social-buttons {
+    grid-template-columns: 1fr;
   }
 
   /* Touch-friendly targets */
@@ -2352,9 +2372,6 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 @media (max-width: 480px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
-  }
-  .quick-actions {
-    grid-template-columns: 1fr 1fr;
   }
 
   .topbar-title h1 {
@@ -2425,12 +2442,13 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   .share-link-row {
     flex-direction: column;
   }
+
+  .version-save-row {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 360px) {
-  .quick-actions {
-    grid-template-columns: 1fr;
-  }
   .topbar-actions .btn {
     padding: 4px 8px;
   }
@@ -3095,7 +3113,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 .share-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
   gap: 20px;
   max-width: 1100px;
 }
@@ -3201,30 +3219,6 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 .share-btn-email {
   background: var(--accent-primary);
-}
-
-@media (max-width: 768px) {
-  .share-hero {
-    padding: 32px 20px;
-  }
-  .share-hero h2 {
-    font-size: 1.2rem;
-  }
-  .share-grid {
-    grid-template-columns: 1fr;
-  }
-  .share-card {
-    padding: 20px;
-  }
-  .share-link-row {
-    flex-direction: column;
-  }
-  .share-social-buttons {
-    grid-template-columns: 1fr;
-  }
-  .share-card h3 {
-    font-size: 0.95rem;
-  }
 }
 
 /* ====== MODAL ====== */
