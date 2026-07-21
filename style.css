@@ -1415,6 +1415,10 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   .builder-form, .jobmatch-input {
     position: static;
     max-height: none;
+    overflow-y: visible;
+  }
+  .builder-preview {
+    min-height: auto;
   }
 }
 
@@ -1552,19 +1556,31 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   }
 
   /* Builder */
+  .builder-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
   .builder-form {
     padding: 16px;
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+  .builder-preview {
+    min-height: auto;
   }
   .form-nav {
     overflow-x: auto;
     flex-wrap: nowrap;
     padding-bottom: 10px;
     gap: 4px;
+    -webkit-overflow-scrolling: touch;
   }
   .form-nav-btn {
     white-space: nowrap;
     font-size: 0.72rem;
     padding: 5px 10px;
+    flex-shrink: 0;
   }
   .form-row {
     grid-template-columns: 1fr;
@@ -1606,9 +1622,13 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   /* CV Preview */
   .cv-preview, .cl-preview {
     min-height: 300px;
+    overflow: visible;
   }
   .cv-content {
     font-size: 0.85rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
   .cv-template-modern .cv-header {
     padding: 20px 16px;
@@ -1652,6 +1672,14 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   }
   .cv-template-minimal .cv-body {
     padding: 12px 16px;
+  }
+
+  .cv-skills-list {
+    gap: 6px;
+  }
+  .cv-skill-item {
+    font-size: 0.78rem;
+    padding: 4px 10px;
   }
 
   /* Cover Letter Preview */
@@ -1748,6 +1776,33 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     text-align: center;
     align-items: center;
   }
+
+  /* Share */
+  .share-hero {
+    padding: 24px 20px;
+  }
+  .share-hero h2 {
+    font-size: 1.2rem;
+  }
+  .share-card {
+    padding: 20px;
+  }
+
+  /* Touch-friendly targets */
+  .btn, button {
+    min-height: 40px;
+  }
+  .btn-sm {
+    min-height: 36px;
+  }
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  .sidebar-nav .nav-item {
+    padding: 14px 16px;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1825,22 +1880,6 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   }
   .share-link-row {
     flex-direction: column;
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar-nav .nav-item {
-    padding: 14px 16px;
-    font-size: 0.95rem;
-  }
-  .btn, button {
-    min-height: 40px;
-  }
-  .btn-sm {
-    min-height: 36px;
-  }
-  input, textarea, select {
-    font-size: 16px !important;
   }
 }
 

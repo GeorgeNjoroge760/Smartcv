@@ -7,9 +7,27 @@ function getPdfOpt(filename) {
     margin: [0.5, 0.5, 0.5, 0.5],
     filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, letterRendering: true, useCORS: true },
+    html2canvas: { scale: 2, letterRendering: true, useCORS: true, logging: false },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
   };
+}
+
+function ensureVisible(el) {
+  const tab = el.closest('.tab-content');
+  if (tab && !tab.classList.contains('active')) {
+    const wasHidden = tab.style.display;
+    tab.style.display = 'block';
+    tab.style.position = 'absolute';
+    tab.style.left = '-9999px';
+    tab.style.width = '800px';
+    return () => {
+      tab.style.display = wasHidden || '';
+      tab.style.position = '';
+      tab.style.left = '';
+      tab.style.width = '';
+    };
+  }
+  return null;
 }
 
 export function downloadCVPdf() {
@@ -18,7 +36,10 @@ export function downloadCVPdf() {
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cv_pdf');
-  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el);
+  const restore = ensureVisible(el);
+  html2pdf().set(getPdfOpt(`${name}_CV.pdf`)).from(el).save()
+    .catch(() => alert('Failed to generate PDF. Please try again.'))
+    .finally(() => { if (restore) restore(); });
 }
 
 export function downloadCoverLetterPDF() {
@@ -27,7 +48,10 @@ export function downloadCoverLetterPDF() {
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   const name = d.fullName.replace(/\s+/g, '_');
   trackExport('cl_pdf');
-  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el);
+  const restore = ensureVisible(el);
+  html2pdf().set(getPdfOpt(`${name}_Cover_Letter.pdf`)).from(el).save()
+    .catch(() => alert('Failed to generate PDF. Please try again.'))
+    .finally(() => { if (restore) restore(); });
 }
 
 export function printCV() {
@@ -35,9 +59,11 @@ export function printCV() {
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cv_print');
+  const restore = ensureVisible(el);
   html2pdf().set(getPdfOpt(`CV_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
-  });
+  }).catch(() => alert('Failed to generate PDF. Please try again.'))
+    .finally(() => { if (restore) restore(); });
 }
 
 export function printCoverLetter() {
@@ -45,9 +71,11 @@ export function printCoverLetter() {
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cl_print');
+  const restore = ensureVisible(el);
   html2pdf().set(getPdfOpt(`Cover_Letter_${Date.now()}.pdf`)).from(el).toPdf().get('pdf').then(pdf => {
     window.open(pdf.output('bloburl'), '_blank');
-  });
+  }).catch(() => alert('Failed to generate PDF. Please try again.'))
+    .finally(() => { if (restore) restore(); });
 }
 
 function getWordStyles() {
