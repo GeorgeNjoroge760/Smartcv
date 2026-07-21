@@ -2,6 +2,7 @@ let _data = {};
 let _undoStack = [];
 let _redoStack = [];
 const MAX_HISTORY = 50;
+const VERSIONS_KEY = 'smartcv_versions';
 
 export function getData() { return _data; }
 export function setData(newData, skipHistory = false) {
@@ -39,7 +40,7 @@ export function getDefaultData() {
     referees: [], refereesAvailableUponRequest: false,
     coverLetter: { company: '', manager: '', position: '', address: '', notes: '' },
     customSkills: [],
-    template: 'modern', clTemplate: 'modern', theme: 'light',
+    template: 'modern', clTemplate: 'modern', theme: 'light', accentColor: '#6c5ce7', language: 'en',
   };
 }
 
@@ -70,4 +71,42 @@ export function loadFromLocal() {
     }
   } catch {}
   return false;
+}
+
+export function getVersions() {
+  try {
+    return JSON.parse(localStorage.getItem(VERSIONS_KEY) || '[]');
+  } catch { return []; }
+}
+
+export function saveVersion(name) {
+  const versions = getVersions();
+  versions.unshift({
+    id: Date.now(),
+    name: name || 'Version ' + (versions.length + 1),
+    date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    data: JSON.parse(JSON.stringify(_data)),
+  });
+  if (versions.length > 20) versions.pop();
+  localStorage.setItem(VERSIONS_KEY, JSON.stringify(versions));
+  return versions;
+}
+
+export function restoreVersion(id) {
+  const versions = getVersions();
+  const v = versions.find(v => v.id === id);
+  if (v) {
+    setData({ ...getDefaultData(), ...v.data }, true);
+    if (v.data.coverLetter) {
+      _data.coverLetter = { ...getDefaultData().coverLetter, ...v.data.coverLetter };
+    }
+    return true;
+  }
+  return false;
+}
+
+export function deleteVersion(id) {
+  const versions = getVersions().filter(v => v.id !== id);
+  localStorage.setItem(VERSIONS_KEY, JSON.stringify(versions));
+  return versions;
 }

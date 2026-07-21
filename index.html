@@ -75,6 +75,34 @@
   <!-- ====== OVERLAY FOR MOBILE ====== -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <!-- ====== PHOTO CROP MODAL ====== -->
+  <div class="crop-modal" id="cropModal">
+    <div class="crop-modal-content glass">
+      <div class="crop-modal-header">
+        <h3><i class="fas fa-crop-alt"></i> Crop Photo</h3>
+        <button class="crop-modal-close" id="cropModalClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="crop-canvas-wrapper">
+        <canvas id="cropCanvas"></canvas>
+      </div>
+      <div class="crop-controls">
+        <div class="crop-ratio-options">
+          <button class="crop-ratio-btn active" data-ratio="free"><i class="fas fa-expand"></i> Free</button>
+          <button class="crop-ratio-btn" data-ratio="1:1"><i class="fas fa-square"></i> 1:1</button>
+          <button class="crop-ratio-btn" data-ratio="4:3"><i class="fas fa-rectangle-landscape"></i> 4:3</button>
+        </div>
+        <div class="crop-zoom">
+          <label>Zoom</label>
+          <input type="range" id="cropZoom" min="0.5" max="3" step="0.05" value="1">
+        </div>
+      </div>
+      <div class="crop-modal-actions">
+        <button class="btn btn-outline" id="cropCancel">Cancel</button>
+        <button class="btn btn-primary" id="cropApply"><i class="fas fa-check"></i> Apply</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ====== MAIN CONTENT ====== -->
   <main class="main-content" id="mainContent">
 
@@ -352,6 +380,9 @@
                 <button class="template-btn active" data-template="modern" onclick="setTemplate('modern')">Modern</button>
                 <button class="template-btn" data-template="professional" onclick="setTemplate('professional')">Professional</button>
                 <button class="template-btn" data-template="minimal" onclick="setTemplate('minimal')">Minimal</button>
+                <button class="template-btn" data-template="executive" onclick="setTemplate('executive')">Executive</button>
+                <button class="template-btn" data-template="creative" onclick="setTemplate('creative')">Creative</button>
+                <button class="template-btn" data-template="technical" onclick="setTemplate('technical')">Technical</button>
               </div>
             </div>
             <div class="preview-actions">
@@ -443,6 +474,25 @@
               </button>
             </div>
           </div>
+          <div class="form-group">
+            <label>Accent Color</label>
+            <div class="accent-color-options" id="accentColorOptions">
+              <button class="accent-swatch active" data-color="#6c5ce7" style="background:#6c5ce7" title="Purple"></button>
+              <button class="accent-swatch" data-color="#0984e3" style="background:#0984e3" title="Blue"></button>
+              <button class="accent-swatch" data-color="#00b894" style="background:#00b894" title="Teal"></button>
+              <button class="accent-swatch" data-color="#e17055" style="background:#e17055" title="Coral"></button>
+              <button class="accent-swatch" data-color="#d63031" style="background:#d63031" title="Red"></button>
+              <button class="accent-swatch" data-color="#fdcb6e" style="background:#fdcb6e" title="Gold"></button>
+              <button class="accent-swatch" data-color="#e84393" style="background:#e84393" title="Pink"></button>
+              <button class="accent-swatch" data-color="#2d3436" style="background:#2d3436" title="Dark"></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Language</label>
+            <select id="languageSelect" class="form-control" onchange="setLanguage(this.value)" style="width:100%;padding:10px 14px;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-input);color:var(--text-primary)">
+              <option value="en">English</option>
+            </select>
+          </div>
         </div>
         <div class="settings-card glass">
           <h3><i class="fas fa-database"></i> Data Management</h3>
@@ -476,6 +526,15 @@
             </div>
           </div>
           <button class="btn btn-primary" onclick="addCustomSkill()"><i class="fas fa-plus"></i> Add Keyword Mapping</button>
+        </div>
+        <div class="settings-card glass">
+          <h3><i class="fas fa-history"></i> Version History</h3>
+          <p class="text-muted">Save snapshots of your CV to compare different versions or revert to a previous state.</p>
+          <div class="version-save-row">
+            <input type="text" id="versionName" placeholder="e.g. Google Application v2" class="form-control" style="flex:1">
+            <button class="btn btn-primary" onclick="saveCVVersion()"><i class="fas fa-save"></i> Save Version</button>
+          </div>
+          <div id="versionList" class="version-list"></div>
         </div>
       </div>
     </section>

@@ -122,6 +122,68 @@ export function renderCV() {
         ${additionalHtml}
       </div>
     </div>`;
+  } else if (d.template === 'executive') {
+    container.innerHTML = `<div class="cv-content ${templateClass}">
+      <div class="cv-body">
+        <div class="cv-sidebar">
+          <div class="cv-sidebar-top">
+            ${photoHtml}
+            <h1>${escapeHtml(name)}</h1>
+            ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
+          </div>
+          <div class="cv-contact">${contact.join('<br>')}</div>
+          ${skillsHtml}
+          ${educationHtml}
+          ${additionalHtml}
+        </div>
+        <div class="cv-main">
+          ${summaryHtml}
+          ${experienceHtml}
+        </div>
+      </div>
+    </div>`;
+  } else if (d.template === 'creative') {
+    container.innerHTML = `<div class="cv-content ${templateClass}">
+      <div class="cv-header">
+        <div class="cv-header-info">
+          <h1>${escapeHtml(name)}</h1>
+          ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
+          <div class="cv-contact">${contact.join(' · ')}</div>
+        </div>
+        ${photoHtml}
+      </div>
+      <div class="cv-body">
+        <div class="cv-main">
+          ${summaryHtml}
+          ${experienceHtml}
+        </div>
+        <div class="cv-sidebar">
+          ${skillsHtml}
+          ${educationHtml}
+          ${additionalHtml}
+        </div>
+      </div>
+    </div>`;
+  } else if (d.template === 'technical') {
+    container.innerHTML = `<div class="cv-content ${templateClass}">
+      <div class="cv-header">
+        <div class="cv-header-left">
+          <h1>${escapeHtml(name)}</h1>
+          ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
+        </div>
+        <div class="cv-header-right">
+          ${photoHtml}
+          <div class="cv-contact">${contact.join('<br>')}</div>
+        </div>
+      </div>
+      <div class="cv-body">
+        ${summaryHtml}
+        ${skillsHtml}
+        ${experienceHtml}
+        ${educationHtml}
+        ${additionalHtml}
+      </div>
+    </div>`;
   } else {
     container.innerHTML = `<div class="cv-content ${templateClass}">
       <div class="cv-header">

@@ -1,10 +1,11 @@
-import { getData, setData, getDefaultData, saveToLocal, loadFromLocal, undo, redo } from './store.js';
+import { getData, setData, getDefaultData, saveToLocal, loadFromLocal, undo, redo, getVersions, saveVersion, restoreVersion, deleteVersion } from './store.js';
 import { initAuth, updateAuthUI, renderAuthModal } from './auth.js';
 import { renderCV } from './cv.js';
 import { renderCoverLetter } from './coverLetter.js';
 import { downloadCVPdf, downloadCoverLetterPDF, printCV, printCoverLetter, downloadCVDocx, downloadCoverLetterDocx, exportJSON, importJSON } from './export.js';
 import { analyzeJobMatch } from './ai.js';
 import { initAnalytics, trackEvent, trackFeatureUse } from './analytics.js';
+import { setLanguage, getLanguage } from './i18n.js';
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -35,6 +36,13 @@ function init() {
   $$('.cl-template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === getData().clTemplate));
   $$('.theme-option').forEach(el => el.classList.toggle('active', el.dataset.theme === getData().theme));
 
+  applyAccentColor(getData().accentColor || '#6c5ce7');
+  $$('.accent-swatch').forEach(el => el.classList.toggle('active', el.dataset.color === (getData().accentColor || '#6c5ce7')));
+
+  $$('#accentColorOptions .accent-swatch').forEach(btn => {
+    btn.addEventListener('click', () => setAccentColor(btn.dataset.color));
+  });
+
   console.log('SmartCV AI initialized');
 }
 
@@ -51,6 +59,7 @@ function renderAll() {
   renderVolunteerWork();
   renderReferees();
   renderCustomSkills();
+  renderVersionList();
   renderProfileList();
   updateProfileSelector();
 }
@@ -749,6 +758,57 @@ function addCustomSkill() {
   saveLocal();
 }
 
+// ---- Version History ----
+
+function renderVersionList() {
+  const container = document.getElementById('versionList');
+  if (!container) return;
+  const versions = getVersions();
+  if (versions.length === 0) {
+    container.innerHTML = '<div class="version-empty">No saved versions yet.</div>';
+    return;
+  }
+  container.innerHTML = versions.map(v => `
+    <div class="version-item" data-version-id="${v.id}">
+      <div class="version-info">
+        <div class="version-name">${escapeAttr(v.name)}</div>
+        <div class="version-date">${v.date}</div>
+      </div>
+      <div class="version-actions">
+        <button class="btn btn-sm btn-primary" data-restore-version="${v.id}" title="Restore this version"><i class="fas fa-undo"></i></button>
+        <button class="btn btn-sm btn-danger" data-delete-version="${v.id}" title="Delete this version"><i class="fas fa-trash-alt"></i></button>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-restore-version]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!confirm('Restore this version? Current unsaved changes will be lost.')) return;
+      restoreVersion(parseInt(btn.dataset.restoreVersion));
+      saveLocal();
+      restoreFormFields();
+      renderAll();
+      alert('Version restored!');
+    });
+  });
+  container.querySelectorAll('[data-delete-version]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!confirm('Delete this version?')) return;
+      deleteVersion(parseInt(btn.dataset.deleteVersion));
+      renderVersionList();
+    });
+  });
+}
+
+function saveCVVersion() {
+  const nameEl = document.getElementById('versionName');
+  const name = nameEl?.value?.trim();
+  if (!name) { alert('Please enter a version name.'); return; }
+  saveVersion(name);
+  if (nameEl) nameEl.value = '';
+  renderVersionList();
+}
+
 // ---- Photo Upload ----
 
 function setupPhotoUpload() {
@@ -795,18 +855,129 @@ function setupPhotoUpload() {
 function handlePhotoFile(file) {
   if (!file.type.startsWith('image/')) return;
   const reader = new FileReader();
-  reader.onload = (e) => {
-    const d = getData();
-    d.photo = e.target.result;
-    const preview = document.getElementById('photoPreview');
-    preview.src = d.photo;
-    preview.style.display = 'block';
-    document.querySelector('.photo-placeholder').style.display = 'none';
-    document.getElementById('photoRemove').style.display = 'inline-flex';
-    saveLocal();
-    renderCV();
-  };
+  reader.onload = (e) => openCropModal(e.target.result);
   reader.readAsDataURL(file);
+}
+
+function openCropModal(imageSrc) {
+  const modal = document.getElementById('cropModal');
+  const canvas = document.getElementById('cropCanvas');
+  const ctx = canvas.getContext('2d');
+  if (!modal || !canvas) return;
+
+  const img = new Image();
+  img.onload = () => {
+    let zoom = 1, offsetX = 0, offsetY = 0, ratio = 0;
+    let dragging = false, lastX = 0, lastY = 0;
+    const wrapper = canvas.parentElement;
+    const W = wrapper.clientWidth;
+    const H = wrapper.clientHeight;
+    canvas.width = W * 2;
+    canvas.height = H * 2;
+    ctx.scale(2, 2);
+
+    function getClip() {
+      let cw, ch;
+      if (ratio === 0) { cw = W; ch = H; }
+      else if (ratio === 1) { cw = ch = Math.min(W, H); }
+      else { cw = W; ch = W / ratio; if (ch > H) { ch = H; cw = H * ratio; } }
+      return { cw, ch };
+    }
+
+    function draw() {
+      const { cw, ch } = getClip();
+      ctx.clearRect(0, 0, W, H);
+      ctx.save();
+      const scale = Math.max(cw / img.width, ch / img.height) * zoom;
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      const ix = (W - iw) / 2 + offsetX;
+      const iy = (H - ih) / 2 + offsetY;
+      ctx.drawImage(img, ix, iy, iw, ih);
+      ctx.restore();
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-in';
+      if (ratio === 1) {
+        const r = Math.min(cw, ch) / 2;
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2, r, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect((W - cw) / 2, (H - ch) / 2, cw, ch);
+      }
+      ctx.restore();
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    draw();
+
+    canvas.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      offsetX += e.clientX - lastX;
+      offsetY += e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      draw();
+    });
+    canvas.addEventListener('pointerup', () => { dragging = false; });
+
+    const zoomSlider = document.getElementById('cropZoom');
+    zoomSlider.value = 1;
+    zoomSlider.oninput = () => { zoom = parseFloat(zoomSlider.value); draw(); };
+
+    document.querySelectorAll('.crop-ratio-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const val = btn.dataset.ratio;
+        ratio = val === 'free' ? 0 : val === '1:1' ? 1 : 4 / 3;
+        offsetX = 0; offsetY = 0;
+        draw();
+      };
+    });
+
+    document.getElementById('cropApply').onclick = () => {
+      const { cw, ch } = getClip();
+      const outSize = 400;
+      const outCanvas = document.createElement('canvas');
+      outCanvas.width = outSize;
+      outCanvas.height = ratio === 1 ? outSize : Math.round(outSize * (ch / cw));
+      const outCtx = outCanvas.getContext('2d');
+      const scale = Math.max(cw / img.width, ch / img.height) * zoom;
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      const ix = (cw - iw) / 2 + offsetX;
+      const iy = (ch - ih) / 2 + offsetY;
+      outCtx.drawImage(img, ix, iy, iw, ih, 0, 0, outCanvas.width, outCanvas.height);
+      const dataUrl = outCanvas.toDataURL('image/jpeg', 0.92);
+      const d = getData();
+      d.photo = dataUrl;
+      const preview = document.getElementById('photoPreview');
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+      document.querySelector('.photo-placeholder').style.display = 'none';
+      document.getElementById('photoRemove').style.display = 'inline-flex';
+      document.getElementById('photoInput').value = '';
+      saveLocal();
+      renderCV();
+      modal.classList.remove('open');
+    };
+
+    document.getElementById('cropCancel').onclick = () => modal.classList.remove('open');
+    document.getElementById('cropModalClose').onclick = () => modal.classList.remove('open');
+
+    modal.classList.add('open');
+  };
+  img.src = imageSrc;
 }
 
 // ---- Theme ----
@@ -823,6 +994,25 @@ function setupThemeToggle() {
     if (btn) btn.textContent = newTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
     saveLocal();
   });
+}
+
+function applyAccentColor(color) {
+  document.documentElement.style.setProperty('--accent-primary', color);
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+  document.documentElement.style.setProperty('--accent-gradient', `linear-gradient(135deg, ${color}, rgba(${r}, ${g}, ${b}, 0.6))`);
+  document.documentElement.style.setProperty('--accent-gradient-2', `linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.6), ${color})`);
+}
+
+function setAccentColor(color) {
+  const d = getData();
+  d.accentColor = color;
+  applyAccentColor(color);
+  $$('.accent-swatch').forEach(el => el.classList.toggle('active', el.dataset.color === color));
+  saveLocal();
+  renderCV();
+  renderCoverLetter();
 }
 
 function setTheme(theme) {
@@ -914,6 +1104,8 @@ function switchProfile(id) {
   $$('.template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === getData().template));
   $$('.cl-template-btn').forEach(b => b.classList.toggle('active', b.dataset.template === getData().clTemplate));
   $$('.theme-option').forEach(el => el.classList.toggle('active', el.dataset.theme === getData().theme));
+  applyAccentColor(getData().accentColor || '#6c5ce7');
+  $$('.accent-swatch').forEach(el => el.classList.toggle('active', el.dataset.color === (getData().accentColor || '#6c5ce7')));
 }
 
 function createProfile(name) {
@@ -988,7 +1180,7 @@ function escapeAttr(str) {
 // ---- Expose to window ----
 
 Object.assign(window, {
-  switchTab, setTheme, setTemplate, setClTemplate,
+  switchTab, setTheme, setTemplate, setClTemplate, setAccentColor,
   addSkill, addEducation: () => { getData().education.push({ institution: '', degree: '', year: '' }); renderEducation(); saveLocal(); renderCV(); },
   addExperience: () => { getData().experience.push({ company: '', title: '', startDate: '', endDate: '', responsibilities: '' }); renderExperience(); saveLocal(); renderCV(); },
   addCertification: () => { if (!getData().certifications) getData().certifications = []; getData().certifications.push({ name: '', issuer: '', date: '' }); renderCertifications(); saveLocal(); renderCV(); },
@@ -997,6 +1189,8 @@ Object.assign(window, {
   addVolunteerWork: () => { if (!getData().volunteerWork) getData().volunteerWork = []; getData().volunteerWork.push({ role: '', organization: '', date: '', description: '' }); renderVolunteerWork(); saveLocal(); renderCV(); },
   addReferee: () => { if (!getData().referees) getData().referees = []; getData().referees.push({ name: '', title: '', organization: '', email: '', phone: '' }); renderReferees(); saveLocal(); renderCV(); },
   toggleRefereesAvailable,
+  saveCVVersion,
+  setLanguage: (lang) => { setLanguage(lang); const d = getData(); d.language = lang; saveLocal(); },
   addCustomSkill,
   regenerateCoverLetter: renderCoverLetter,
   renderAuthModal,
