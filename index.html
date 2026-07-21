@@ -386,6 +386,12 @@
               </div>
             </div>
             <div class="preview-actions">
+              <div class="zoom-controls" id="cvZoomControls">
+                <button class="btn btn-sm btn-outline" onclick="zoomCvPreview(-0.1)" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                <span class="zoom-level" id="cvZoomLevel">100%</span>
+                <button class="btn btn-sm btn-outline" onclick="zoomCvPreview(0.1)" title="Zoom In"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-outline" onclick="zoomCvPreview(0, true)" title="Reset Zoom"><i class="fas fa-expand"></i></button>
+              </div>
               <button class="btn btn-sm btn-primary" onclick="downloadCVPdf()" data-i18n="downloadPdf"><i class="fas fa-file-pdf"></i> PDF</button>
               <button class="btn btn-sm btn-outline" onclick="downloadCVDocx()" data-i18n="downloadDocx"><i class="fas fa-file-word"></i> DOCX</button>
               <button class="btn btn-sm btn-outline" onclick="printCV()" data-i18n="print"><i class="fas fa-print"></i> Print</button>
@@ -442,6 +448,12 @@
               </div>
             </div>
             <div class="preview-actions">
+              <div class="zoom-controls" id="clZoomControls">
+                <button class="btn btn-sm btn-outline" onclick="zoomClPreview(-0.1)" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                <span class="zoom-level" id="clZoomLevel">100%</span>
+                <button class="btn btn-sm btn-outline" onclick="zoomClPreview(0.1)" title="Zoom In"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-outline" onclick="zoomClPreview(0, true)" title="Reset Zoom"><i class="fas fa-expand"></i></button>
+              </div>
               <button class="btn btn-sm btn-primary" onclick="downloadCoverLetterPDF()" data-i18n="downloadPdf"><i class="fas fa-file-pdf"></i> PDF</button>
               <button class="btn btn-sm btn-outline" onclick="downloadCoverLetterDocx()" data-i18n="downloadDocx"><i class="fas fa-file-word"></i> DOCX</button>
               <button class="btn btn-sm btn-outline" onclick="printCoverLetter()" data-i18n="print"><i class="fas fa-print"></i> Print</button>

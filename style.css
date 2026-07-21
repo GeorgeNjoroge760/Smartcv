@@ -998,7 +998,34 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
 
 .preview-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+}
+
+.zoom-controls .btn {
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+}
+
+.zoom-level {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 36px;
+  text-align: center;
+  user-select: none;
 }
 
 /* ====== CV PREVIEW ====== */
@@ -1010,6 +1037,7 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   min-height: 500px;
   padding: 0;
   overflow: hidden;
+  touch-action: pinch-zoom;
 }
 
 .cv-empty-state {
@@ -2085,12 +2113,18 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
     padding-bottom: 10px;
     gap: 4px;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: relative;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
+  .form-nav::-webkit-scrollbar { display: none; }
   .form-nav-btn {
     white-space: nowrap;
-    font-size: 0.72rem;
-    padding: 5px 10px;
+    font-size: 0.75rem;
+    padding: 8px 14px;
     flex-shrink: 0;
+    min-height: 36px;
   }
   .form-row {
     grid-template-columns: 1fr;
