@@ -48,7 +48,6 @@ function init() {
   const langSelect = $('#languageSelect');
   if (langSelect) langSelect.value = savedLang;
   translatePage();
-  setupPinchZoom();
 
   console.log('SmartCV AI initialized');
 }
@@ -1185,76 +1184,10 @@ function escapeAttr(str) {
   return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ---- Preview Zoom ----
-
-let cvZoomScale = 1;
-let clZoomScale = 1;
-
-function applyZoom(previewId, scale, levelId) {
-  const el = document.querySelector(`#${previewId} .cv-content, #${previewId} .cl-content`);
-  if (!el) return;
-  el.style.transformOrigin = 'top center';
-  el.style.transform = `scale(${scale})`;
-  el.style.width = `${100 / scale}%`;
-  const levelEl = document.getElementById(levelId);
-  if (levelEl) levelEl.textContent = `${Math.round(scale * 100)}%`;
-}
-
-function zoomCvPreview(delta, reset) {
-  if (reset) cvZoomScale = 1;
-  else cvZoomScale = Math.max(0.5, Math.min(2, cvZoomScale + delta));
-  applyZoom('cvPreview', cvZoomScale, 'cvZoomLevel');
-}
-
-function zoomClPreview(delta, reset) {
-  if (reset) clZoomScale = 1;
-  else clZoomScale = Math.max(0.5, Math.min(2, clZoomScale + delta));
-  applyZoom('clPreview', clZoomScale, 'clZoomLevel');
-}
-
-function setupPinchZoom() {
-  const previews = document.querySelectorAll('.cv-preview, .cl-preview');
-  previews.forEach(preview => {
-    let initialDistance = 0;
-    let initialScale = 1;
-    const isCl = preview.id === 'clPreview';
-
-    preview.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        initialDistance = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        initialScale = isCl ? clZoomScale : cvZoomScale;
-      }
-    }, { passive: false });
-
-    preview.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const dist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        const newScale = Math.max(0.5, Math.min(2, initialScale * (dist / initialDistance)));
-        if (isCl) {
-          clZoomScale = newScale;
-          applyZoom('clPreview', clZoomScale, 'clZoomLevel');
-        } else {
-          cvZoomScale = newScale;
-          applyZoom('cvPreview', cvZoomScale, 'cvZoomLevel');
-        }
-      }
-    }, { passive: false });
-  });
-}
-
 // ---- Expose to window ----
 
 Object.assign(window, {
   switchTab, setTheme, setTemplate, setClTemplate, setAccentColor,
-  zoomCvPreview, zoomClPreview,
   addSkill, addEducation: () => { getData().education.push({ institution: '', degree: '', year: '' }); renderEducation(); saveLocal(); renderCV(); },
   addExperience: () => { getData().experience.push({ company: '', title: '', startDate: '', endDate: '', responsibilities: '' }); renderExperience(); saveLocal(); renderCV(); },
   addCertification: () => { if (!getData().certifications) getData().certifications = []; getData().certifications.push({ name: '', issuer: '', date: '' }); renderCertifications(); saveLocal(); renderCV(); },
