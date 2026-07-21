@@ -1034,6 +1034,8 @@ input, textarea, select { font-family: inherit; font-size: 0.95rem; }
   font-family: var(--font-primary);
   color: #333;
   line-height: 1.5;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Template: Modern */
