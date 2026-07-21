@@ -42,23 +42,16 @@ function getPdfOptions(filename) {
 
 function singlePagePdf(el, filename) {
   const opt = getPdfOptions(filename);
-  const pdf = new window.jspdf.jsPDF(opt.jsPDF);
-  const margin = 0.4;
-  const pageW = pdf.internal.pageSize.getWidth() - margin * 2;
-  const pageH = pdf.internal.pageSize.getHeight() - margin * 2;
-
-  return html2canvas(el, opt.html2canvas).then(canvas => {
-    const imgW = canvas.width;
-    const imgH = canvas.height;
-    const ratio = Math.min(pageW / (imgW / 2), pageH / (imgH / 2));
-    const scaledW = (imgW / 2) * ratio;
-    const scaledH = (imgH / 2) * ratio;
-    const x = margin + (pageW - scaledW) / 2;
-    const y = margin;
-    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-    pdf.addImage(imgData, 'JPEG', x, y, scaledW, scaledH);
-    pdf.save(filename);
-  });
+  return html2pdf()
+    .set(opt)
+    .from(el)
+    .toPdf()
+    .get('pdf')
+    .then(pdf => {
+      const pages = pdf.internal.getNumberOfPages();
+      for (let i = pages; i > 1; i--) pdf.deletePage(i);
+      pdf.save(filename);
+    });
 }
 
 export function downloadCVPdf() {
@@ -85,19 +78,27 @@ export function downloadCoverLetterPDF() {
     .finally(() => { if (restore) restore(); });
 }
 
+function printElement(el, title) {
+  const restore = ensureVisible(el);
+  const win = window.open('', '_blank');
+  if (!win) { alert('Pop-up blocked. Please allow pop-ups for this site.'); if (restore) restore(); return; }
+  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map(s => s.outerHTML).join('\n');
+  win.document.write(`<!DOCTYPE html><html><head><title>${title}</title>${styles}
+    <style>body { margin: 0; display: flex; justify-content: center; } @media print { body { padding: 0; } }</style>
+    </head><body></body></html>`);
+  win.document.body.appendChild(el.cloneNode(true));
+  win.document.close();
+  if (restore) restore();
+  win.onload = () => { win.print(); };
+}
+
 export function printCV() {
   const el = document.querySelector('#cvPreview .cv-content');
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cv_print');
-  const restore = ensureVisible(el);
-  singlePagePdf(el, `CV_${Date.now()}.pdf`)
-    .then(() => {
-      const url = URL.createObjectURL(new Blob([], { type: 'application/pdf' }));
-      window.open(url, '_blank');
-    })
-    .catch(() => alert('Failed to generate PDF. Please try again.'))
-    .finally(() => { if (restore) restore(); });
+  printElement(el, 'CV');
 }
 
 export function printCoverLetter() {
@@ -105,14 +106,7 @@ export function printCoverLetter() {
   const d = getData();
   if (!el || !d.fullName) { alert('Please fill in your details first.'); return; }
   trackExport('cl_print');
-  const restore = ensureVisible(el);
-  singlePagePdf(el, `Cover_Letter_${Date.now()}.pdf`)
-    .then(() => {
-      const url = URL.createObjectURL(new Blob([], { type: 'application/pdf' }));
-      window.open(url, '_blank');
-    })
-    .catch(() => alert('Failed to generate PDF. Please try again.'))
-    .finally(() => { if (restore) restore(); });
+  printElement(el, 'Cover Letter');
 }
 
 function getWordStyles(accentColor) {
